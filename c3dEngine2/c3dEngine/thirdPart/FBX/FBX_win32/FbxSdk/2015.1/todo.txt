@@ -1,0 +1,4 @@
+put include folder and lib folder of fbxsdk2015.1_for_vs2010 here.
+
+
+
