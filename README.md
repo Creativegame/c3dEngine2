@@ -1,7 +1,7 @@
 c3dEngine2
 ==========  
   
-![screenshot](http://git.oschina.net/wantnon2/c3dEngine2/raw/master/screenshot/logo.png)    
+![screenshot](https://raw.githubusercontent.com/wantnon2/c3dEngine2/master/screenshot/logo.png)    
   
 by wantnon (yang chao) 2014-4-1  
   
