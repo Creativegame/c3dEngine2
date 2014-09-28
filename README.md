@@ -32,15 +32,15 @@ qq group: 338565878
   
 screenshot:  
 draw a simple box  
-![screenshot](http://git.oschina.net/wantnon2/c3dEngine2/raw/master/screenshot/screenshot1.png)  
+![screenshot](https://raw.githubusercontent.com/wantnon2/c3dEngine2/master/screenshot/screenshot1.png)  
 cube mapping  
-![screenshot](http://git.oschina.net/wantnon2/c3dEngine2/raw/master/screenshot/screenshot6.png)   
+![screenshot](https://raw.githubusercontent.com/wantnon2/c3dEngine2/master/screenshot/screenshot6.png)   
 fbx skin animation and convert fbx to user-defined format  
-![screenshot](http://git.oschina.net/wantnon2/c3dEngine2/raw/master/screenshot/screenshot2.png)  
+![screenshot](https://raw.githubusercontent.com/wantnon2/c3dEngine2/master/screenshot/screenshot2.png)  
 quadtree LOD terrain   
-![screenshot](http://git.oschina.net/wantnon2/c3dEngine2/raw/master/screenshot/screenshot3.png)  
+![screenshot](https://raw.githubusercontent.com/wantnon2/c3dEngine2/master/screenshot/screenshot3.png)  
 bullet integration  
-![screenshot](http://git.oschina.net/wantnon2/c3dEngine2/raw/master/screenshot/screenshot4.png)  
+![screenshot](https://raw.githubusercontent.com/wantnon2/c3dEngine2/master/screenshot/screenshot4.png)  
 a whole game: super single cell  
 tips:   
 after entered the level selecting page, press the debug button at the right down corner, all the levels will be unlocked.   
@@ -51,4 +51,4 @@ run back:           sweep down.
 turn left/right:    sweep left/right.  
 jump:               sweep up.  
 jump forward:       drag up.  
-![screenshot](http://git.oschina.net/wantnon2/c3dEngine2/raw/master/screenshot/screenshot5.png)  
+![screenshot](https://raw.githubusercontent.com/wantnon2/c3dEngine2/master/screenshot/screenshot5.png)  
