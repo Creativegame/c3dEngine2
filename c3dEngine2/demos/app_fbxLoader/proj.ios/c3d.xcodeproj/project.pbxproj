@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1808AFD8190036B900284715 /* export in Resources */ = {isa = PBXBuildFile; fileRef = 1808AFD7190036B900284715 /* export */; };
 		1808AFE619003D1F00284715 /* fbxLoader_resource in Resources */ = {isa = PBXBuildFile; fileRef = 1808AFE519003D1F00284715 /* fbxLoader_resource */; };
 		181FD39618C2147100F2C204 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 181FD39518C2147100F2C204 /* CoreAudio.framework */; };
 		181FD39818C2147A00F2C204 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 181FD39718C2147A00F2C204 /* AVFoundation.framework */; };
@@ -106,7 +105,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1808AFD7190036B900284715 /* export */ = {isa = PBXFileReference; lastKnownFileType = folder; path = export; sourceTree = "<group>"; };
 		1808AFE519003D1F00284715 /* fbxLoader_resource */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fbxLoader_resource; sourceTree = "<group>"; };
 		181FD39518C2147100F2C204 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		181FD39718C2147A00F2C204 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -1306,7 +1304,6 @@
 			isa = PBXGroup;
 			children = (
 				1808AFE519003D1F00284715 /* fbxLoader_resource */,
-				1808AFD7190036B900284715 /* export */,
 				57C77C3C18E4538F009820B6 /* c3dEngineResource */,
 				57C77C2B18E45362009820B6 /* defaultImage */,
 			);
@@ -1382,7 +1379,6 @@
 				57C77AD618E45302009820B6 /* MainWindow.xib in Resources */,
 				1808AFE619003D1F00284715 /* fbxLoader_resource in Resources */,
 				57C77AD418E45302009820B6 /* c3d-Info.plist in Resources */,
-				1808AFD8190036B900284715 /* export in Resources */,
 				57C77C3718E45362009820B6 /* Default-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
