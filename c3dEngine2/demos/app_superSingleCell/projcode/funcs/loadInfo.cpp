@@ -113,7 +113,7 @@ void loadInfo_subMesh(Cc3dSubMesh*submesh,const string&meshFilePathShort,const s
             fscanf(fp, "%s",t_imageName);
             //将texFileName的后缀名改成.png
             string part1,part2;
-            vector<string> rs=splitStrInTwoByLastDot(t_imageName);
+            vector<string> rs=splitStrInTwoByLastDotBehindLastBar(t_imageName);
             part1=rs[0];
             part2=rs[1];
             string imageName=part1+".png";
