@@ -9,6 +9,7 @@
 #include "c3dPathPlatformDepend.h"
 #if (C3D_TARGET_PLATFORM == C3D_PLATFORM_WIN32) 
 	#include "windows.h" 
+	#include <direct.h>
 #else
     
 #endif
@@ -42,4 +43,9 @@ bool isFileExistsAtPath_plat(const string&path){
     }
     FindClose(hFind);
     return rValue;
+}
+
+bool makeDirectory_plat(string path){
+	int rt=_mkdir(path.c_str());
+	return (rt==0);
 }

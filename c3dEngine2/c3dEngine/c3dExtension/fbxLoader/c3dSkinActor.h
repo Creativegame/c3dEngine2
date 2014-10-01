@@ -3,9 +3,7 @@
 #include<vector>
 using namespace std;
 #include "core/c3dActor.h"
-#if (C3D_TARGET_PLATFORM == C3D_PLATFORM_WIN32)
-#include <direct.h>
-#endif
+
 static char tCharBuffer[1024]={0};
 static void fskipOneStr(FILE * fp,bool valueOnly){
 	assert(fp);

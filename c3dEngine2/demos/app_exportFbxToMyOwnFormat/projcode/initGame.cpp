@@ -73,7 +73,13 @@ void initGame(){
 	//do not use girl.cfc (do not use dot in folderName), because it can cause getFullPath fail on iOS(on iOS, the getFullPath function is not implemented very well)
 	//export values only
 	{
+#if (C3D_TARGET_PLATFORM == C3D_PLATFORM_WIN32) 
+		string exportPath="export/girl_cfc";
+#elif (C3D_TARGET_PLATFORM == C3D_PLATFORM_IOS) 
 		string exportPath=Cc3dDocuments::sharedDocuments()->getDocumentsPath()+"/export/girl_cfc";
+#else
+		assert(false);
+#endif
 		bool valueOnly=true;//export values only. small, but not very readable.
 		cout<<"export values only..."<<endl;
 		actor->doExport(exportPath,valueOnly);
@@ -81,7 +87,14 @@ void initGame(){
 	}
 	//export values and keys
 	{
+#if (C3D_TARGET_PLATFORM == C3D_PLATFORM_WIN32) 
+		string exportPath="export/girl_readable_cfc";
+#elif (C3D_TARGET_PLATFORM == C3D_PLATFORM_IOS) 
 		string exportPath=Cc3dDocuments::sharedDocuments()->getDocumentsPath()+"/export/girl_readable_cfc";
+#else
+		assert(false);
+#endif
+		
 		bool valueOnly=false;//export values and keys. big, but more readable. 
 		cout<<"export values and keys..."<<endl;
 		actor->doExport(exportPath,valueOnly);

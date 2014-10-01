@@ -16,4 +16,5 @@ using namespace std;
 #include "common/c3dPathFunc.h"
 string getFullPath_plat(const string&filePath);
 bool isFileExistsAtPath_plat(const string&path);
+bool makeDirectory_plat(string path);
 #endif /* defined(__HelloOpenGL__c3dPathPlatformDepend__) */
