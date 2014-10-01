@@ -304,4 +304,15 @@ Cc3dMatrix4 orthogonalization3x3(const Cc3dMatrix4&mat)
     return rsmat;
 	
 }
-
+bool isPowOfTwo(int n){
+    if(n<0)return false;
+    if(n==0)return true;
+    while(n!=1){
+        int r=n%2;
+        if(r!=0){
+            return false;
+        }
+        n/=2;
+    }
+    return true;
+}

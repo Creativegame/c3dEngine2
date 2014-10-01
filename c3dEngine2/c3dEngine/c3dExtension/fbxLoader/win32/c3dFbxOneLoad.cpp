@@ -628,7 +628,7 @@ bool Cc3dFbxOneLoad::LoadScene(FbxManager* pManager, FbxDocument* pScene, const 
 					const int lTextureCount = lProperty.GetSrcObjectCount(FbxFileTexture::ClassId);
 					if (lTextureCount)
 					{
-						const FbxFileTexture* lFileTexture = lProperty.GetSrcObject<FbxFileTexture>();//lProperty.GetSrcObject(FBX_TYPE(FbxFileTexture), 0);//2014-9-27
+                        const FbxFileTexture* lFileTexture = lProperty.GetSrcObject<FbxFileTexture>();//lProperty.GetSrcObject(FBX_TYPE(FbxFileTexture), 0);//2014-9-27
 
 						// Try to load the texture from absolute path
 						string fullPath=lFileTexture->GetFileName();
@@ -639,6 +639,8 @@ bool Cc3dFbxOneLoad::LoadScene(FbxManager* pManager, FbxDocument* pScene, const 
 						//cout<<"texPath:"<<texPath<<endl;
 						//以texPath生成纹理--abc
 						texture=Cc3dTextureCache::sharedTextureCache()->addImage(texPath.c_str());
+                        assert(isPowOfTwo((int)texture->getWidth()));
+                        assert(isPowOfTwo((int)texture->getHeight()));
 						if(texture==NULL){
 							cout<<"error: create texture failed! "<<endl;
 							assert(false);
