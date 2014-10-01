@@ -87,3 +87,9 @@ unsigned char* Cc3dFileUtils::getFileData(const char* pszFileName, const char* p
     }
     return pBuffer;
 }
+
+bool Cc3dFileUtils::makeDirectory(string path){
+    //Return true if the operation was successful or already exists, otherwise false
+
+    return makeDirectory_plat(path);
+}

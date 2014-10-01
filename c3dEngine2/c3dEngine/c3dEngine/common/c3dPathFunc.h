@@ -13,7 +13,7 @@
 #include <vector>
 using namespace std;
 
-vector<string> splitStrInTwoByLastDot(const string&str);
+vector<string> splitStrInTwoByLastDotBehindLastBar(const string&str);
 vector<string> splitStrInTwoByLastBar(const string&str);
 string getFileNameFromFilePath(string filePath);
 #endif /* defined(__HelloOpenGL__c3dPathFunc__) */

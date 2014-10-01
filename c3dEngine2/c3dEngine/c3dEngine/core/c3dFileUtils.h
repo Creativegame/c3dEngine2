@@ -18,6 +18,9 @@ public:
     string getFullPath(const string&filePath);
     bool getIsFileOrClipExist(const string&fileOrClipPath);
 	unsigned char* getFileData(const char* pszFileName, const char* pszMode, unsigned long * pSize);
+    
+    bool makeDirectory(string path);
+
 protected:
     bool getIsFileOrClipExistUnderPath(const string&path,const string&fileOrClipName);
     

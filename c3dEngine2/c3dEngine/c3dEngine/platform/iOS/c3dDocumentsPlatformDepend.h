@@ -13,4 +13,5 @@
 #include <string>
 using namespace std;
 string getDocumentsPath_plat();
+
 #endif /* defined(__HelloOpenGL__c3dDocumentsPlatformDepend__) */

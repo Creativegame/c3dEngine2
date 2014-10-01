@@ -9,8 +9,6 @@
 /* Begin PBXBuildFile section */
 		1808AFD51900368A00284715 /* globalVars.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1808AFD01900368A00284715 /* globalVars.cpp */; };
 		1808AFD61900368A00284715 /* initGame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1808AFD21900368A00284715 /* initGame.cpp */; };
-		1808AFD8190036B900284715 /* export in Resources */ = {isa = PBXBuildFile; fileRef = 1808AFD7190036B900284715 /* export */; };
-		1808AFE619003D1F00284715 /* fbxLoader_resource in Resources */ = {isa = PBXBuildFile; fileRef = 1808AFE519003D1F00284715 /* fbxLoader_resource */; };
 		181FD39618C2147100F2C204 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 181FD39518C2147100F2C204 /* CoreAudio.framework */; };
 		181FD39818C2147A00F2C204 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 181FD39718C2147A00F2C204 /* AVFoundation.framework */; };
 		1870661616C4662A00CDA573 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1870661516C4662A00CDA573 /* OpenAL.framework */; };
@@ -101,8 +99,6 @@
 		1808AFD11900368A00284715 /* globalVars.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = globalVars.h; sourceTree = "<group>"; };
 		1808AFD21900368A00284715 /* initGame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = initGame.cpp; sourceTree = "<group>"; };
 		1808AFD31900368A00284715 /* initGame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = initGame.h; sourceTree = "<group>"; };
-		1808AFD7190036B900284715 /* export */ = {isa = PBXFileReference; lastKnownFileType = folder; path = export; sourceTree = "<group>"; };
-		1808AFE519003D1F00284715 /* fbxLoader_resource */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fbxLoader_resource; sourceTree = "<group>"; };
 		181FD39518C2147100F2C204 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		181FD39718C2147A00F2C204 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		1870661516C4662A00CDA573 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
@@ -576,8 +572,6 @@
 		57C77C1E18E45362009820B6 /* resource */ = {
 			isa = PBXGroup;
 			children = (
-				1808AFE519003D1F00284715 /* fbxLoader_resource */,
-				1808AFD7190036B900284715 /* export */,
 				57C77C3C18E4538F009820B6 /* c3dEngineResource */,
 				57C77C2B18E45362009820B6 /* defaultImage */,
 			);
@@ -651,9 +645,7 @@
 				57C77C3918E45362009820B6 /* Default@2x.png in Resources */,
 				57C77C3818E45362009820B6 /* Default.png in Resources */,
 				57C77AD618E45302009820B6 /* MainWindow.xib in Resources */,
-				1808AFE619003D1F00284715 /* fbxLoader_resource in Resources */,
 				57C77AD418E45302009820B6 /* c3d-Info.plist in Resources */,
-				1808AFD8190036B900284715 /* export in Resources */,
 				57C77C3718E45362009820B6 /* Default-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -829,10 +821,15 @@
 					"$(SRCROOT)/../../../c3dEngine/c3dExtension",
 					"$(SRCROOT)/../../../c3dEngine/extension",
 					"$(SRCROOT)/../../../c3dEngine/thirdPart/bullet/bullet-2.82-r2704/src",
+					"$(SRCROOT)/../../../c3dEngine/thirdPart/FBX/FBX_iOS/FbxSdk/2015.1/include",
 				);
 				INFOPLIST_FILE = "c3d/c3d-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../../../c3dEngine/thirdPart/FBX/FBX_iOS/FbxSdk/2015.1/lib/ios-armv7/debug",
+					"$(SRCROOT)/../../../c3dEngine/thirdPart/FBX/FBX_iOS/FbxSdk/2015.1/lib/ios-i386/release",
+				);
 				New_Setting = "";
 				OTHER_CFLAGS = "";
 				PRODUCT_NAME = importMyOwnFormat;
@@ -864,10 +861,15 @@
 					"$(SRCROOT)/../../../c3dEngine/c3dExtension",
 					"$(SRCROOT)/../../../c3dEngine/extension",
 					"$(SRCROOT)/../../../c3dEngine/thirdPart/bullet/bullet-2.82-r2704/src",
+					"$(SRCROOT)/../../../c3dEngine/thirdPart/FBX/FBX_iOS/FbxSdk/2015.1/include",
 				);
 				INFOPLIST_FILE = "c3d/c3d-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../../../c3dEngine/thirdPart/FBX/FBX_iOS/FbxSdk/2015.1/lib/ios-armv7/debug",
+					"$(SRCROOT)/../../../c3dEngine/thirdPart/FBX/FBX_iOS/FbxSdk/2015.1/lib/ios-i386/release",
+				);
 				New_Setting = "";
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PRODUCT_NAME = importMyOwnFormat;

@@ -16,18 +16,25 @@ string getFileNameFromFilePath(string filePath){
     return fileName;
     
 }
-vector<string> splitStrInTwoByLastDot(const string&str)
+vector<string> splitStrInTwoByLastDotBehindLastBar(const string&str)
 //part1 and part2 do not contain the split-dot
 //if there is no dot in str, then part1=str and part2=""
+//example:
+//  "abc/def.txt" -> "abc/def"+"txt"
+//  "abc/def" -> "abc/def"+""
+//  "abc2.0/def" -> "abc2.0/def"+""  (not "abc2"+"0/def")
 {
     string part1="";
     string part2="";
-	//find the last "/" location
+	//find the last "." location
     int i_lastDot=-1;
     int len=(int)str.size();
     for(int i=len-1;i>=0;i--){
         if(str[i]=='.'){
             i_lastDot=i;
+            break;
+        }
+        if(str[i]=='/'||str[i]=='\\'){
             break;
         }
     }

@@ -17,8 +17,8 @@ bool Cc3dProgram::initWithFile(const string&vertShaderFilePath,const string&frag
     m_vertShaderFilePath=vertShaderFilePath;
     m_fragShaderFilePath=fragShaderFilePath;
     //create shader
-    vector<string> _vertShaderFileName=splitStrInTwoByLastDot(vertShaderFilePath);
-    vector<string> _fragShaderFileName=splitStrInTwoByLastDot(fragShaderFilePath);
+    vector<string> _vertShaderFileName=splitStrInTwoByLastDotBehindLastBar(vertShaderFilePath);
+    vector<string> _fragShaderFileName=splitStrInTwoByLastDotBehindLastBar(fragShaderFilePath);
     //创建Program
     GLuint vertShader=createShader(_vertShaderFileName[0].c_str(), _vertShaderFileName[1].c_str());
     GLuint fragShader=createShader(_fragShaderFileName[0].c_str(), _fragShaderFileName[1].c_str());

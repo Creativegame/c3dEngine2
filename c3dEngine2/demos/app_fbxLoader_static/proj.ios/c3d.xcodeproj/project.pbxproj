@@ -1572,8 +1572,6 @@
 					"$(inherited)",
 					"$(SRCROOT)/../../../c3dEngine/thirdPart/FBX/FBX_iOS/FbxSdk/2015.1/lib/ios-i386/debug",
 					"$(SRCROOT)/../../../c3dEngine/thirdPart/FBX/FBX_iOS/FbxSdk/2015.1/lib/ios-armv7/debug",
-					"/Users/apple/Documents/projects/myGitProjs/c3dEngine2/c3dEngine2/c3dEngine/thirdPart/FBX/FBX_iOS/FbxSdk/2015.1/lib/ios-i386/debug",
-					"/Users/apple/Documents/projects/myGitProjs/c3dEngine2/c3dEngine2/c3dEngine/thirdPart/FBX/FBX_iOS/FbxSdk/2015.1/lib/ios-i386/release",
 				);
 				New_Setting = "";
 				OTHER_CFLAGS = "";
@@ -1616,8 +1614,6 @@
 					"$(inherited)",
 					"$(SRCROOT)/../../../c3dEngine/thirdPart/FBX/FBX_iOS/FbxSdk/2015.1/lib/ios-i386/release",
 					"$(SRCROOT)/../../../c3dEngine/thirdPart/FBX/FBX_iOS/FbxSdk/2015.1/lib/ios-armv7/release",
-					"/Users/apple/Documents/projects/myGitProjs/c3dEngine2/c3dEngine2/c3dEngine/thirdPart/FBX/FBX_iOS/FbxSdk/2015.1/lib/ios-i386/debug",
-					"/Users/apple/Documents/projects/myGitProjs/c3dEngine2/c3dEngine2/c3dEngine/thirdPart/FBX/FBX_iOS/FbxSdk/2015.1/lib/ios-i386/release",
 				);
 				New_Setting = "";
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
