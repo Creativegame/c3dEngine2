@@ -558,7 +558,7 @@ void Cc3dSkinMesh::doExport(string filePath,bool valueOnly){
 		//RTmat and Scale
 		Cc3dMatrix4 RTmat=this->getTransform()->getRTmat();
 		const float *m=RTmat.getArray();
-		fprintKey(fp,valueOnly,"RTmat");fprintf(fp," %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f",
+		fprintKey(fp,valueOnly,"RTmat");fprintf(fp," %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n",
 			m[0],m[1],m[2],m[3],
 			m[4],m[5],m[6],m[7],
 			m[8],m[9],m[10],m[11],
