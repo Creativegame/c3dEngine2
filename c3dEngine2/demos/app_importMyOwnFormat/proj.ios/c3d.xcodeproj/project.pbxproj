@@ -78,6 +78,8 @@
 		187EA0A41914E7D30016A373 /* c3dPassUnifoCallBack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 187EA0411914E7D30016A373 /* c3dPassUnifoCallBack.cpp */; };
 		187EA0A51914E7D30016A373 /* c3dProgramSetUp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 187EA0431914E7D30016A373 /* c3dProgramSetUp.cpp */; };
 		187EA0BD1914EA590016A373 /* c3dSkinActor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 187EA0B91914EA590016A373 /* c3dSkinActor.cpp */; };
+		18F6F8C319DD6475008D11D8 /* export in Resources */ = {isa = PBXBuildFile; fileRef = 18F6F8C219DD6475008D11D8 /* export */; };
+		18F6F8C519DD64CC008D11D8 /* fbxLoader_resource in Resources */ = {isa = PBXBuildFile; fileRef = 18F6F8C419DD64CC008D11D8 /* fbxLoader_resource */; };
 		35DF6441138C40D500FF9459 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35DF6440138C40D500FF9459 /* UIKit.framework */; };
 		35DF6443138C40D500FF9459 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35DF6442138C40D500FF9459 /* Foundation.framework */; };
 		35DF6445138C40D500FF9459 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35DF6444138C40D500FF9459 /* CoreGraphics.framework */; };
@@ -238,6 +240,8 @@
 		187EA0B31914EA590016A373 /* c3dExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = c3dExtension.h; sourceTree = "<group>"; };
 		187EA0B91914EA590016A373 /* c3dSkinActor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = c3dSkinActor.cpp; sourceTree = "<group>"; };
 		187EA0BA1914EA590016A373 /* c3dSkinActor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = c3dSkinActor.h; sourceTree = "<group>"; };
+		18F6F8C219DD6475008D11D8 /* export */ = {isa = PBXFileReference; lastKnownFileType = folder; path = export; sourceTree = "<group>"; };
+		18F6F8C419DD64CC008D11D8 /* fbxLoader_resource */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fbxLoader_resource; sourceTree = "<group>"; };
 		35DF643C138C40D500FF9459 /* importMyOwnFormat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = importMyOwnFormat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		35DF6440138C40D500FF9459 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		35DF6442138C40D500FF9459 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -572,6 +576,8 @@
 		57C77C1E18E45362009820B6 /* resource */ = {
 			isa = PBXGroup;
 			children = (
+				18F6F8C419DD64CC008D11D8 /* fbxLoader_resource */,
+				18F6F8C219DD6475008D11D8 /* export */,
 				57C77C3C18E4538F009820B6 /* c3dEngineResource */,
 				57C77C2B18E45362009820B6 /* defaultImage */,
 			);
@@ -645,7 +651,9 @@
 				57C77C3918E45362009820B6 /* Default@2x.png in Resources */,
 				57C77C3818E45362009820B6 /* Default.png in Resources */,
 				57C77AD618E45302009820B6 /* MainWindow.xib in Resources */,
+				18F6F8C519DD64CC008D11D8 /* fbxLoader_resource in Resources */,
 				57C77AD418E45302009820B6 /* c3d-Info.plist in Resources */,
+				18F6F8C319DD6475008D11D8 /* export in Resources */,
 				57C77C3718E45362009820B6 /* Default-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

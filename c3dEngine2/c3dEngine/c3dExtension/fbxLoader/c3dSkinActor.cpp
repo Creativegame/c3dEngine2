@@ -545,16 +545,20 @@ void Cc3dSkinMesh::doExport(string filePath,bool valueOnly){
 		}
 		//------------------write file
 		fprintKey(fp,valueOnly,"m_skinSubMesh.size");fprintf(fp," %i\n",this->getSubMeshCount());
-		fprintKey(fp,valueOnly,"m_vertexDupList.size");fprintf(fp," %i\n",(int)m_vertexDupList.size());
-		int nVertexDup=(int)m_vertexDupList.size();
-		for(int i=0;i<nVertexDup;i++){
-			int nMeshIDvID=(int)m_vertexDupList[i].size();
-			fprintKey(fp,valueOnly,"nMeshIDvID");fprintf(fp," %i\n",nMeshIDvID);
-			for(int j=0;j<nMeshIDvID;j++){
-				const _CmeshIDvID&meshIDvID=m_vertexDupList[i][j];
-				fprintKey(fp,valueOnly,"  meshIDvID");fprintf(fp," %i %i\n",meshIDvID.getMeshID(),meshIDvID.getvID());
-			}
-		}
+        if(m_skin){
+            fprintKey(fp,valueOnly,"m_vertexDupList.size");fprintf(fp," %i\n",(int)m_vertexDupList.size());
+            int nVertexDup=(int)m_vertexDupList.size();
+            for(int i=0;i<nVertexDup;i++){
+                int nMeshIDvID=(int)m_vertexDupList[i].size();
+                fprintKey(fp,valueOnly,"nMeshIDvID");fprintf(fp," %i\n",nMeshIDvID);
+                for(int j=0;j<nMeshIDvID;j++){
+                    const _CmeshIDvID&meshIDvID=m_vertexDupList[i][j];
+                    fprintKey(fp,valueOnly,"  meshIDvID");fprintf(fp," %i %i\n",meshIDvID.getMeshID(),meshIDvID.getvID());
+                }
+            }
+        }else{//if there is no skin, no need to export m_vertexDupList, just print "m_vertexDupList.size 0"
+            fprintKey(fp,valueOnly,"m_vertexDupList.size");fprintf(fp," %i\n",0);
+        }
 		//RTmat and Scale
 		Cc3dMatrix4 RTmat=this->getTransform()->getRTmat();
 		const float *m=RTmat.getArray();
@@ -571,7 +575,9 @@ void Cc3dSkinMesh::doExport(string filePath,bool valueOnly){
 		//--------------------------close file
 		fclose(fp);
 		//------------------m_skin
-		m_skin->doExport(folderPath+"/m_skin",valueOnly);
+        if(m_skin){
+            m_skin->doExport(folderPath+"/m_skin",valueOnly);
+        }
 		//------------------skinSubMeshes
 		int nSkinSubMesh=this->getSubMeshCount();
 		for(int i=0;i<nSkinSubMesh;i++){
@@ -654,10 +660,12 @@ void Cc3dSkinMesh::doImport(string filePath,bool valueOnly){
 		//--------------------------close file
 		fclose(fp);
 		//------------------m_skin
-		Cc3dSkin*skin=new Cc3dSkin();
-		skin->autorelease();
-		setSkin(skin);
-		skin->doImport(folderPath+"/m_skin",valueOnly);
+        if(Cc3dFileUtils::sharedFileUtils()->getIsFileOrClipExist(folderPath+"/m_skin")){
+            Cc3dSkin*skin=new Cc3dSkin();
+            skin->autorelease();
+            setSkin(skin);
+            skin->doImport(folderPath+"/m_skin",valueOnly);
+        }
 		//------------------skinSubMeshes
 		assert(this->getSubMeshCount()==0);
 		for(int i=0;i<t_nSkinSubMesh;i++){
