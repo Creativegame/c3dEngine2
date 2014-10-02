@@ -262,18 +262,18 @@ public:
 	void* getFbxMeshPtr(){return m_fbxMeshPtr;}
 
 	void deform(int aniLayerIndex,float time){
-		int meshVertexCount = (int)m_vertexDupList.size();
-
-		vector<Cc3dMatrix4> deformationList;//deformation of each vertex
-		deformationList.resize(meshVertexCount);
-		for(int i=0;i<(int)deformationList.size();i++)deformationList[i]=zeroMat();
-		vector<float> weightList;//weight of each vertex
-		weightList.resize(meshVertexCount);
-		for(int i=0;i<(int)weightList.size();i++)weightList[i]=0;
-
-		// For all skins and all clusters, accumulate their deformation and weight
-		// on each vertices and store them in deformationList and weightList.
 		if(m_skin){
+            int meshVertexCount = (int)m_vertexDupList.size();
+
+            vector<Cc3dMatrix4> deformationList;//deformation of each vertex
+            deformationList.resize(meshVertexCount);
+            for(int i=0;i<(int)deformationList.size();i++)deformationList[i]=zeroMat();
+            vector<float> weightList;//weight of each vertex
+            weightList.resize(meshVertexCount);
+            for(int i=0;i<(int)weightList.size();i++)weightList[i]=0;
+            
+            // For all clusters, accumulate their deformation and weight
+            // on each vertices and store them in deformationList and weightList.
 			int clusterCount = m_skin->getClusterCount();
 			for ( int clusterIndex=0; clusterIndex<clusterCount; ++clusterIndex)
 			{
