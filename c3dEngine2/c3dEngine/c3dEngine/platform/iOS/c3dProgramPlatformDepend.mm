@@ -7,6 +7,7 @@
 //
 
 #include "c3dProgramPlatformDepend.h"
+#include "c3dGL.h"
 GLuint createShader_plat(const char*shaderName,const char*ext)
 {
     //转化成NSString

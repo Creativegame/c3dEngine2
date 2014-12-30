@@ -65,7 +65,9 @@ void initOpenAL_plat(){
         }
     }else{
         cout<<"error:newDevice==NULL!"<<endl;
-        assert(false);
+        //http://stackoverflow.com/questions/27443311/ios-simulator-does-not-play-sound
+        cout<<"please test in real device!"<<endl;
+       // assert(false);
     }
     // clear any errors
     alGetError();
