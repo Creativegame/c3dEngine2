@@ -108,6 +108,15 @@ public:
 	void setIsDoDepthTest(bool value){
 		m_model->setIsDoDepthTest(value);
 	}
+	void setIsWriteDepthBuffer(bool value){
+	
+        m_model->setIsWriteDepthBuffer(value);
+       
+        
+    }
+	void setCullFace(Ec3dCullFace cullFace){
+		m_model->setCullFace(cullFace);
+	}
     void setCamera(Cc3dCamera*camera){
         
         this->Cc3dNode::setCamera(camera);

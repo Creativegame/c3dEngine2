@@ -87,6 +87,7 @@ public:
         }
         
     }
+	
     void setCamera(Cc3dCamera*camera){
         
         this->Cc3dNode::setCamera(camera);

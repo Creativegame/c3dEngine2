@@ -122,6 +122,24 @@ public:
         }
         
     }
+	void setIsWriteDepthBuffer(bool value){
+		int n=(int)m_meshList.size();
+        for(int i=0;i<n;i++){
+            Cc3dMesh*p=m_meshList[i];
+            if(p==NULL)continue;
+            p->setIsWriteDepthBuffer(value);
+        }
+        
+    }
+	void setCullFace(Ec3dCullFace cullFace){
+		int n=(int)m_meshList.size();
+        for(int i=0;i<n;i++){
+            Cc3dMesh*p=m_meshList[i];
+            if(p==NULL)continue;
+            p->setCullFace(cullFace);
+        }
+        
+    }
     vector<Cc3dMesh*> getMeshList()const{return m_meshList;}
     void addMesh(Cc3dMesh*mesh);
     void submitVertex(GLenum usage);
