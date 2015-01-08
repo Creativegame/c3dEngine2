@@ -20,6 +20,7 @@ public:
 	FbxManager* lSdkManager;
 	FbxScene* lScene;
 	Cc3dSkinActor* m_actor;
+    bool m_isNoAnimation;
 	//
 	Cc3dFbxOneLoad(){
 		fbxFileName=NULL;
@@ -31,6 +32,7 @@ public:
 			m_actor->autorelease();
 			m_actor->retain();
 		}
+        m_isNoAnimation=false;
 	}
 	~Cc3dFbxOneLoad(){
 		assert(m_actor);

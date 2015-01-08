@@ -275,6 +275,7 @@ public:
 
 	void deform(int aniLayerIndex,float time){
         //mesh transform animation
+        if(this->getAniLayerCount()!=0)
         {
             int aniLayerCount=this->getAniLayerCount();
             assert(aniLayerIndex<aniLayerCount);
@@ -450,6 +451,7 @@ public:
 		assert(index>=0&&index<(int)m_aniLayerInfoList.size());
 		return m_aniLayerInfoList[index];
 	}
+    int getAniLayerInfoCount()const{return (int)m_aniLayerInfoList.size();}
 	void update(float dt){
 	//	cout<<"dt:"<<dt<<endl;
 		if(m_interval>0){

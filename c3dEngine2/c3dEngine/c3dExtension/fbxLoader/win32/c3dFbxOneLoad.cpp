@@ -896,16 +896,22 @@ void Cc3dFbxOneLoad::GetSmoothing(FbxManager* pSdkManager, FbxNode* pNode, bool 
 		lScene->FillAnimStackNameArray(mAnimStackNameArray);
 		const int lAnimStackCount = mAnimStackNameArray.GetCount();
 		if(aniFrameInterval==0){
-			//bake static model (the very first frame)
+            m_isNoAnimation=true;
+        }else{
+            m_isNoAnimation=false;
+        }
+        if(m_isNoAnimation){
+            //bake static model (the very first frame)
 			assert(lAnimStackCount>0);
 			int animStackIndex=0;
 			FbxAnimStack *lCurrentAnimationStack;
 			lCurrentAnimationStack = lScene->FindMember<FbxAnimStack>(mAnimStackNameArray[animStackIndex]->Buffer());// lScene->FindMember(FBX_TYPE(FbxAnimStack), mAnimStackNameArray[animStackIndex]->Buffer());//2014-9-27
 			FbxTime fbxTime(0);//2014-9-27
             this->updateSkin(fbxTime,lCurrentAnimationStack,animStackIndex);
-
 			return;
-		}
+
+        
+        }
 		for(int i=0;i<lAnimStackCount;i++){
 			int animStackIndex=i;
 	
@@ -1248,20 +1254,26 @@ void Cc3dFbxOneLoad::GetSmoothing(FbxManager* pSdkManager, FbxNode* pNode, bool 
 		{
 			Cc3dSkinMesh* mesh=(Cc3dSkinMesh*)m_actor->findSkinMeshByFbxMeshPtr(lMesh);
 			if(mesh){
-				Cc3dMatrix4 globalPositionMat=FbxAMatrixToCc3dMatrix4(pGlobalPosition);
-            ////    globalPositionMat.print();
-			///////////////////	mesh->setRTSmat(globalPositionMat);
-                int meshAniLayerCount=mesh->getAniLayerCount();
-                if(animStackIndex>=meshAniLayerCount){//aniLayer not exist
-                    //create aniLayer
-                    Cc3dAniLayer*aniLayer=new Cc3dAniLayer();
-                    aniLayer->autorelease();
-                    mesh->addAniLayer(aniLayer);
-                    assert((int)mesh->getAniLayerCount()==animStackIndex+1);
+                if(m_isNoAnimation){
+                    Cc3dMatrix4 globalPositionMat=FbxAMatrixToCc3dMatrix4(pGlobalPosition);
+                    ////    globalPositionMat.print();
+                    mesh->setRTSmat(globalPositionMat);
+                }else{//animation model
+                    Cc3dMatrix4 globalPositionMat=FbxAMatrixToCc3dMatrix4(pGlobalPosition);
+                    ////    globalPositionMat.print();
+                    int meshAniLayerCount=mesh->getAniLayerCount();
+                    if(animStackIndex>=meshAniLayerCount){//aniLayer not exist
+                        //create aniLayer
+                        Cc3dAniLayer*aniLayer=new Cc3dAniLayer();
+                        aniLayer->autorelease();
+                        mesh->addAniLayer(aniLayer);
+                        assert((int)mesh->getAniLayerCount()==animStackIndex+1);
+                    }
+                    Cc3dAniLayer*aniLayer=mesh->getAniLayerByIndex(animStackIndex);
+                    aniLayer->addAniFrame(Cc3dAniFrame(globalPositionMat,(float)pTime.GetMilliSeconds()/1000));
+
                 }
-                Cc3dAniLayer*aniLayer=mesh->getAniLayerByIndex(animStackIndex);
-                aniLayer->addAniFrame(Cc3dAniFrame(globalPositionMat,(float)pTime.GetMilliSeconds()/1000));
-			}
+            }
 		}
 		const int lVertexCount = lMesh->GetControlPointsCount();
 		const int triangleCount = lMesh->GetPolygonCount();
