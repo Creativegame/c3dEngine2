@@ -26,7 +26,7 @@ void Cc3dAniLayer::doExport(string filePath,bool valueOnly){
 			fprintKey(fp,valueOnly,"aniFrame\n");
 			float time=aniFrame.getTime();
 			fprintKey(fp,valueOnly,"  m_time");fprintf(fp," %f\n",time);
-			const float *m=aniFrame.getVertexTransformMat().getArray();
+			const float *m=aniFrame.getTransformMat().getArray();
 			fprintKey(fp,valueOnly,"  m_vertexTransformMat");fprintf(fp," %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n",
 																	m[0],m[1],m[2],m[3],
 																	m[4],m[5],m[6],m[7],

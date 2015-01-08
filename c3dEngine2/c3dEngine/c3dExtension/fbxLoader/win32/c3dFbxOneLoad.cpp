@@ -1044,8 +1044,10 @@ void Cc3dFbxOneLoad::GetSmoothing(FbxManager* pSdkManager, FbxNode* pNode, bool 
 	{
 		//{the scale component of globalPosition matrix is equals to the product of scale factors when fbx file import and export via 3dmax }
 		FbxAMatrix lGlobalPosition = GetGlobalPosition(pNode, pTime,pPose, &pParentGlobalPosition);
-
-		if (pNode->GetNodeAttribute())
+		
+        
+        
+        if (pNode->GetNodeAttribute())
 		{
 			// Geometry offset.
 			// it is not inherited by the children.
@@ -1247,7 +1249,18 @@ void Cc3dFbxOneLoad::GetSmoothing(FbxManager* pSdkManager, FbxNode* pNode, bool 
 			Cc3dSkinMesh* mesh=(Cc3dSkinMesh*)m_actor->findSkinMeshByFbxMeshPtr(lMesh);
 			if(mesh){
 				Cc3dMatrix4 globalPositionMat=FbxAMatrixToCc3dMatrix4(pGlobalPosition);
-				mesh->setRTSmat(globalPositionMat);
+            ////    globalPositionMat.print();
+			///////////////////	mesh->setRTSmat(globalPositionMat);
+                int meshAniLayerCount=mesh->getAniLayerCount();
+                if(animStackIndex>=meshAniLayerCount){//aniLayer not exist
+                    //create aniLayer
+                    Cc3dAniLayer*aniLayer=new Cc3dAniLayer();
+                    aniLayer->autorelease();
+                    mesh->addAniLayer(aniLayer);
+                    assert((int)mesh->getAniLayerCount()==animStackIndex+1);
+                }
+                Cc3dAniLayer*aniLayer=mesh->getAniLayerByIndex(animStackIndex);
+                aniLayer->addAniFrame(Cc3dAniFrame(globalPositionMat,(float)pTime.GetMilliSeconds()/1000));
 			}
 		}
 		const int lVertexCount = lMesh->GetControlPointsCount();
@@ -1476,7 +1489,7 @@ void Cc3dFbxOneLoad::GetSmoothing(FbxManager* pSdkManager, FbxNode* pNode, bool 
 		}
 	}
 
-	
+/*
 //Compute the transform matrix that the cluster will transform the vertex.
 	void Cc3dFbxOneLoad::ComputeClusterDeformation(FbxAMatrix& pGlobalPosition, 
 		FbxMesh* pMesh,
@@ -1521,4 +1534,77 @@ void Cc3dFbxOneLoad::GetSmoothing(FbxManager* pSdkManager, FbxNode* pNode, bool 
 		pVertexTransformMatrix = lClusterRelativeCurrentPositionInverse * lClusterRelativeInitPosition;
 
 
-	}                 
+	}    
+ */
+//Compute the transform matrix that the cluster will transform the vertex.
+void Cc3dFbxOneLoad::ComputeClusterDeformation(FbxAMatrix& pGlobalPosition,
+                               FbxMesh* pMesh,
+                               FbxCluster* pCluster,
+                               FbxAMatrix& pVertexTransformMatrix,
+                               FbxTime pTime,
+                               FbxPose* pPose)
+{
+    FbxCluster::ELinkMode lClusterMode = pCluster->GetLinkMode();
+    
+    FbxAMatrix lReferenceGlobalInitPosition;
+    FbxAMatrix lReferenceGlobalCurrentPosition;
+    FbxAMatrix lAssociateGlobalInitPosition;
+    FbxAMatrix lAssociateGlobalCurrentPosition;
+    FbxAMatrix lClusterGlobalInitPosition;
+    FbxAMatrix lClusterGlobalCurrentPosition;
+    
+    FbxAMatrix lReferenceGeometry;
+    FbxAMatrix lAssociateGeometry;
+    FbxAMatrix lClusterGeometry;
+    
+    FbxAMatrix lClusterRelativeInitPosition;
+    FbxAMatrix lClusterRelativeCurrentPositionInverse;
+    
+    if (lClusterMode == FbxCluster::eAdditive && pCluster->GetAssociateModel())
+    {
+        pCluster->GetTransformAssociateModelMatrix(lAssociateGlobalInitPosition);
+        // Geometric transform of the model
+        lAssociateGeometry = GetGeometry(pCluster->GetAssociateModel());
+        lAssociateGlobalInitPosition *= lAssociateGeometry;
+        lAssociateGlobalCurrentPosition = GetGlobalPosition(pCluster->GetAssociateModel(), pTime, pPose);
+        
+        pCluster->GetTransformMatrix(lReferenceGlobalInitPosition);
+        // Multiply lReferenceGlobalInitPosition by Geometric Transformation
+        lReferenceGeometry = GetGeometry(pMesh->GetNode());
+        lReferenceGlobalInitPosition *= lReferenceGeometry;
+        lReferenceGlobalCurrentPosition = pGlobalPosition;
+        
+        // Get the link initial global position and the link current global position.
+        pCluster->GetTransformLinkMatrix(lClusterGlobalInitPosition);
+        // Multiply lClusterGlobalInitPosition by Geometric Transformation
+        lClusterGeometry = GetGeometry(pCluster->GetLink());
+        lClusterGlobalInitPosition *= lClusterGeometry;
+        lClusterGlobalCurrentPosition = GetGlobalPosition(pCluster->GetLink(), pTime, pPose);
+        
+        // Compute the shift of the link relative to the reference.
+        //ModelM-1 * AssoM * AssoGX-1 * LinkGX * LinkM-1*ModelM
+        pVertexTransformMatrix = lReferenceGlobalInitPosition.Inverse() * lAssociateGlobalInitPosition * lAssociateGlobalCurrentPosition.Inverse() *
+        lClusterGlobalCurrentPosition * lClusterGlobalInitPosition.Inverse() * lReferenceGlobalInitPosition;
+    }
+    else
+    {
+        pCluster->GetTransformMatrix(lReferenceGlobalInitPosition);
+        lReferenceGlobalCurrentPosition = pGlobalPosition;
+        // Multiply lReferenceGlobalInitPosition by Geometric Transformation
+        lReferenceGeometry = GetGeometry(pMesh->GetNode());
+        lReferenceGlobalInitPosition *= lReferenceGeometry;
+        
+        // Get the link initial global position and the link current global position.
+        pCluster->GetTransformLinkMatrix(lClusterGlobalInitPosition);
+        lClusterGlobalCurrentPosition = GetGlobalPosition(pCluster->GetLink(), pTime, pPose);
+        
+        // Compute the initial position of the link relative to the reference.
+        lClusterRelativeInitPosition = lClusterGlobalInitPosition.Inverse() * lReferenceGlobalInitPosition;
+        
+        // Compute the current position of the link relative to the reference.
+        lClusterRelativeCurrentPositionInverse = lReferenceGlobalCurrentPosition.Inverse() * lClusterGlobalCurrentPosition;
+        
+        // Compute the shift of the link relative to the reference.
+        pVertexTransformMatrix = lClusterRelativeCurrentPositionInverse * lClusterRelativeInitPosition;
+    }
+}

@@ -28,7 +28,7 @@ static Cc3dVector4 fscanVector4(FILE * fp){
 class Cc3dAniFrame
 {
 protected:
-	Cc3dMatrix4 m_vertexTransformMat;
+	Cc3dMatrix4 m_transformMat;
 	float m_time;
 public:
 	Cc3dAniFrame(){
@@ -38,13 +38,13 @@ public:
 	
 	}
 
-	Cc3dAniFrame(const Cc3dMatrix4&vertexTransformMat,float time){
-		m_vertexTransformMat=vertexTransformMat;
+	Cc3dAniFrame(const Cc3dMatrix4&transformMat,float time){
+		m_transformMat=transformMat;
 		m_time=time;
 	}
 
-	void setVertexTransformMat(const Cc3dMatrix4&vertexTransformMat){m_vertexTransformMat=vertexTransformMat;}
-	Cc3dMatrix4 getVertexTransformMat()const{return m_vertexTransformMat;}
+	void setVertexTransformMat(const Cc3dMatrix4&transformMat){m_transformMat=transformMat;}
+	Cc3dMatrix4 getTransformMat()const{return m_transformMat;}
 	void setTime(float time){m_time=time;}
 	float getTime()const{return m_time;}
 };
@@ -78,9 +78,9 @@ public:
 				aniFrameNxt=m_aniFrameList[i];
 				//calculate interpolated aniFrame
 				float timeFoe=aniFrameFoe.getTime();
-				const Cc3dMatrix4&vertexTransformMatFoe=aniFrameFoe.getVertexTransformMat();
+				const Cc3dMatrix4&vertexTransformMatFoe=aniFrameFoe.getTransformMat();
 				float timeNxt=aniFrameNxt.getTime();
-				const Cc3dMatrix4&vertexTransformMatNxt=aniFrameNxt.getVertexTransformMat();
+				const Cc3dMatrix4&vertexTransformMatNxt=aniFrameNxt.getTransformMat();
 				float weightFoe=(timeNxt-time)/(timeNxt-timeFoe);
 				float weightNxt=(time-timeFoe)/(timeNxt-timeFoe);
 				Cc3dMatrix4 vertexTransformMat=vertexTransformMatFoe*weightFoe+vertexTransformMatNxt*weightNxt;
@@ -248,6 +248,7 @@ protected:
 	void* m_fbxMeshPtr;//this pointer only used for loading fbx data from fbx
 	Cc3dSkin*m_skin;
 	vector<vector<_CmeshIDvID> > m_vertexDupList;//m_vertexDupList[meshVID] is duplicated to {(meshID,vID),(meshID,vID),...}
+    vector<Cc3dAniLayer*>  m_aniLayerList;
 public:
 	Cc3dSkinMesh(){
 		m_fbxMeshPtr=NULL;
@@ -256,12 +257,33 @@ public:
 	virtual ~Cc3dSkinMesh(){
 		if(m_skin)m_skin->release();
 	}
+    void addAniLayer(Cc3dAniLayer*aniLayer){
+        m_aniLayerList.push_back(aniLayer);
+        aniLayer->retain();
+    }
+    Cc3dAniLayer* getAniLayerByIndex(int index){
+        assert(index>=0&&index<(int)m_aniLayerList.size());
+        return m_aniLayerList[index];
+        
+    }
+    int getAniLayerCount()const{return (int)m_aniLayerList.size();}
+
 	void doExport(string filePath,bool valueOnly);
 	void doImport(string filePath,bool valueOnly);
 	void setFbxMeshPtr(void*fbxMeshPtr){m_fbxMeshPtr=fbxMeshPtr;}
 	void* getFbxMeshPtr(){return m_fbxMeshPtr;}
 
 	void deform(int aniLayerIndex,float time){
+        //mesh transform animation
+        {
+            int aniLayerCount=this->getAniLayerCount();
+            assert(aniLayerIndex<aniLayerCount);
+            Cc3dAniLayer*aniLayer=this->getAniLayerByIndex(aniLayerIndex);
+            const Cc3dAniFrame&aniFrame=aniLayer->getAniFrameByTime(time);
+            Cc3dMatrix4 meshTransformMat=aniFrame.getTransformMat();//should change vertexTransformMat to transformMat!!!!!!!!!
+            this->setRTSmat(meshTransformMat);
+        }
+        //skin deform animation
 		if(m_skin){
             int meshVertexCount = (int)m_vertexDupList.size();
 
@@ -282,10 +304,10 @@ public:
 				int aniLayerCount=cluster->getAniLayerCount();
 				assert(aniLayerIndex<aniLayerCount);
 				Cc3dAniLayer*aniLayer=cluster->getAniLayerByIndex(aniLayerIndex);
-				int aniFrameCount=aniLayer->getAniFrameCount();
+				//int aniFrameCount=aniLayer->getAniFrameCount();//not used
 				const Cc3dAniFrame&aniFrame=aniLayer->getAniFrameByTime(time);
-				Cc3dMatrix4 vertexTransformMat=aniFrame.getVertexTransformMat();
-				float time=aniFrame.getTime();
+				Cc3dMatrix4 vertexTransformMat=aniFrame.getTransformMat();
+				//float time=aniFrame.getTime();//not used
 				int clusterVertexIndexCount=cluster->getVertexIndexCount();
 
 				for (int k = 0; k < clusterVertexIndexCount; ++k) 
