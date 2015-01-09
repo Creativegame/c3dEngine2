@@ -69,6 +69,7 @@ public:
 		FbxTime& pTime, 
 		FbxPose* pPose,
 		int animStackIndex);
+   // void ComputeShapeDeformation(FbxMesh* pMesh, FbxTime& pTime, FbxAnimLayer * pAnimLayer, int animStackIndex);
 	void InitializeSdkObjects(FbxManager*& pSdkManager, FbxScene*& pScene);
 	bool LoadScene(FbxManager* pManager, FbxDocument* pScene, const char* pFilename);
 	void DestroySdkObjects(FbxManager* &pSdkManager);

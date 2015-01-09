@@ -1285,6 +1285,9 @@ void Cc3dFbxOneLoad::GetSmoothing(FbxManager* pSdkManager, FbxNode* pNode, bool 
 		const bool lHasShape = lMesh->GetShapeCount() > 0;
 		if(lHasShape){
 			cout<<"warning: not support shape deform yet!"<<endl;
+            //Deform the vertex array with the shapes
+   //         ComputeShapeDeformation(lMesh, pTime, pAnimLayer, animStackIndex);
+            
 		}
 		//»ñµÃhasSkin
 		bool HasSkin=getHasDeformer(lMesh);
@@ -1461,6 +1464,129 @@ void Cc3dFbxOneLoad::GetSmoothing(FbxManager* pSdkManager, FbxNode* pNode, bool 
 		}
 		
 	}
+/*
+// Deform the vertex array with the shapes contained in the mesh.
+void Cc3dFbxOneLoad::ComputeShapeDeformation(FbxMesh* pMesh, FbxTime& pTime, FbxAnimLayer * pAnimLayer, int animStackIndex)
+{
+
+    int lBlendShapeDeformerCount = pMesh->GetDeformerCount(FbxDeformer::eBlendShape);
+    for(int lBlendShapeIndex = 0; lBlendShapeIndex<lBlendShapeDeformerCount; ++lBlendShapeIndex)
+    {
+        FbxBlendShape* lBlendShape = (FbxBlendShape*)pMesh->GetDeformer(lBlendShapeIndex, FbxDeformer::eBlendShape);
+        
+        int lBlendShapeChannelCount = lBlendShape->GetBlendShapeChannelCount();
+        for(int lChannelIndex = 0; lChannelIndex<lBlendShapeChannelCount; ++lChannelIndex)
+        {
+            FbxBlendShapeChannel* lChannel = lBlendShape->GetBlendShapeChannel(lChannelIndex);
+            if(lChannel)
+            {
+                // Get the percentage of influence on this channel.
+                FbxAnimCurve* lFCurve = pMesh->GetShapeChannel(lBlendShapeIndex, lChannelIndex, pAnimLayer);
+                if (!lFCurve) continue;
+                double lWeight = lFCurve->Evaluate(pTime);
+                
+ 
+//                 If there is only one targetShape on this channel, the influence is easy to calculate:
+//                 influence = (targetShape - baseGeometry) * weight * 0.01
+//                 dstGeometry = baseGeometry + influence
+//                 
+//                 But if there are more than one targetShapes on this channel, this is an in-between
+//                 blendshape, also called progressive morph. The calculation of influence is different.
+//                 
+//                 For example, given two in-between targets, the full weight percentage of first target
+//                 is 50, and the full weight percentage of the second target is 100.
+//                 When the weight percentage reach 50, the base geometry is already be fully morphed
+//                 to the first target shape. When the weight go over 50, it begin to morph from the
+//                 first target shape to the second target shape.
+//                 
+//                 To calculate influence when the weight percentage is 25:
+//                 1. 25 falls in the scope of 0 and 50, the morphing is from base geometry to the first target.
+//                 2. And since 25 is already half way between 0 and 50, so the real weight percentage change to
+//                 the first target is 50.
+//                 influence = (firstTargetShape - baseGeometry) * (25-0)/(50-0) * 100
+//                 dstGeometry = baseGeometry + influence
+//                 
+//                 To calculate influence when the weight percentage is 75:
+//                 1. 75 falls in the scope of 50 and 100, the morphing is from the first target to the second.
+//                 2. And since 75 is already half way between 50 and 100, so the real weight percentage change 
+//                 to the second target is 50.
+//                 influence = (secondTargetShape - firstTargetShape) * (75-50)/(100-50) * 100
+//                 dstGeometry = firstTargetShape + influence
+ 
+                // Find the two shape indices for influence calculation according to the weight.
+                // Consider index of base geometry as -1.
+                
+                int lShapeCount = lChannel->GetTargetShapeCount();
+                double* lFullWeights = lChannel->GetTargetShapeFullWeights();
+                
+                // Find out which scope the lWeight falls in.
+                int lStartIndex = -1;
+                int lEndIndex = -1;
+                for(int lShapeIndex = 0; lShapeIndex<lShapeCount; ++lShapeIndex)
+                {
+                    if(lWeight > 0 && lWeight <= lFullWeights[0])
+                    {
+                        lEndIndex = 0;
+                        break;
+                    }
+                    if(lWeight > lFullWeights[lShapeIndex] && lWeight < lFullWeights[lShapeIndex+1])
+                    {
+                        lStartIndex = lShapeIndex;
+                        lEndIndex = lShapeIndex + 1;
+                        break;
+                    }
+                }
+                
+                FbxShape* lStartShape = NULL;
+                FbxShape* lEndShape = NULL;
+                if(lStartIndex > -1)
+                {
+                    lStartShape = lChannel->GetTargetShape(lStartIndex);
+                }
+                if(lEndIndex > -1)
+                {
+                    lEndShape = lChannel->GetTargetShape(lEndIndex);
+                }
+                
+                //The weight percentage falls between base geometry and the first target shape.
+                if(lStartIndex == -1 && lEndShape)
+                {
+                    double lEndWeight = lFullWeights[0];
+                    // Calculate the real weight.
+                    lWeight = (lWeight/lEndWeight) * 100;
+                    // Initialize the lDstVertexArray with vertex of base geometry.
+                    memcpy(lDstVertexArray, lSrcVertexArray, lVertexCount * sizeof(FbxVector4));
+                    for (int j = 0; j < lVertexCount; j++)
+                    {
+                        // Add the influence of the shape vertex to the mesh vertex.
+                        FbxVector4 lInfluence = (lEndShape->GetControlPoints()[j] - lSrcVertexArray[j]) * lWeight * 0.01;
+                        lDstVertexArray[j] += lInfluence;
+                    }
+                }
+                //The weight percentage falls between two target shapes.
+                else if(lStartShape && lEndShape)
+                {
+                    double lStartWeight = lFullWeights[lStartIndex];
+                    double lEndWeight = lFullWeights[lEndIndex];
+                    // Calculate the real weight.
+                    lWeight = ((lWeight-lStartWeight)/(lEndWeight-lStartWeight)) * 100;
+                    // Initialize the lDstVertexArray with vertex of the previous target shape geometry.
+                    memcpy(lDstVertexArray, lStartShape->GetControlPoints(), lVertexCount * sizeof(FbxVector4));
+                    for (int j = 0; j < lVertexCount; j++)
+                    {
+                        // Add the influence of the shape vertex to the previous shape vertex.
+                        FbxVector4 lInfluence = (lEndShape->GetControlPoints()[j] - lStartShape->GetControlPoints()[j]) * lWeight * 0.01;
+                        lDstVertexArray[j] += lInfluence;
+                    }	
+                }
+            }//If lChannel is valid
+        }//For each blend shape channel
+    }//For each blend shape deformer
+    
+    memcpy(pVertexArray, lDstVertexArray, lVertexCount * sizeof(FbxVector4));
+    
+    delete [] lDstVertexArray;
+}*/
 	
 
 	// Scale all the elements of a matrix.

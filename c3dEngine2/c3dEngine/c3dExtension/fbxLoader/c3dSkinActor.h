@@ -47,6 +47,7 @@ public:
 	Cc3dMatrix4 getTransformMat()const{return m_transformMat;}
 	void setTime(float time){m_time=time;}
 	float getTime()const{return m_time;}
+    
 };
 class Cc3dAniLayer:public Cc3dObject
 {
@@ -151,6 +152,109 @@ public:
 
 
 };
+
+class Cc3dAnimCurveFrame
+{
+public:
+    Cc3dAnimCurveFrame(){
+        m_value=0;
+        m_time=0;
+    }
+    virtual~Cc3dAnimCurveFrame(){}
+    Cc3dAnimCurveFrame(float value,float time){
+        m_value=value;
+        m_time=time;
+    }
+    float getValue()const {return m_value;}
+    float getTime()const {return m_time;}
+    void setValue(float value){m_value=value;}
+    void setTime(float time){m_time=time;}
+    
+protected:
+    float m_value;
+    float m_time;
+
+};
+
+class Cc3dAnimCurve:public Cc3dObject
+{
+public:
+    Cc3dAnimCurve(){
+    
+    }
+    virtual~Cc3dAnimCurve(){
+        
+    }
+    void addAniCurveFrame(const Cc3dAnimCurveFrame&aniCurveFrame){
+        m_animCurveFrameList.push_back(aniCurveFrame);
+    }
+    const Cc3dAnimCurveFrame&getAniCurveFrameByIndex(int index){
+        assert(index>=0&&index<(int)m_animCurveFrameList.size());
+        return m_animCurveFrameList[index];
+    }
+    int getAniFrameCount()const {return (int)m_animCurveFrameList.size();}
+    Cc3dAnimCurveFrame getAniCurveFrameByTime(float time){
+        assert(m_animCurveFrameList.empty()==false);
+        assert(time>=m_animCurveFrameList[0].getTime());
+        assert(time<=m_animCurveFrameList[(int)m_animCurveFrameList.size()-1].getTime());
+        Cc3dAnimCurveFrame aniFrameFoe;
+        Cc3dAnimCurveFrame aniFrameNxt;
+        int nAniFrame=(int)m_animCurveFrameList.size();
+        for(int i=0;i<nAniFrame;i++){
+            const Cc3dAnimCurveFrame&aniFrame=m_animCurveFrameList[i];
+            if(aniFrame.getTime()==time){
+                return aniFrame;
+            }else if(aniFrame.getTime()>time){
+                assert(i-1>=0);
+                aniFrameFoe=m_animCurveFrameList[i-1];
+                aniFrameNxt=m_animCurveFrameList[i];
+                //calculate interpolated aniFrame
+                float timeFoe=aniFrameFoe.getTime();
+                float valueFoe=aniFrameFoe.getValue();
+                float timeNxt=aniFrameNxt.getTime();
+                float valueNxt=aniFrameNxt.getValue();
+                float weightFoe=(timeNxt-time)/(timeNxt-timeFoe);
+                float weightNxt=(time-timeFoe)/(timeNxt-timeFoe);
+                float value=valueFoe*weightFoe+valueNxt*weightNxt;
+                Cc3dAnimCurveFrame animCurveFrame(value,time);
+                return animCurveFrame;
+            }
+        }
+        assert(false);
+    }
+
+protected:
+    vector<Cc3dAnimCurveFrame> m_animCurveFrameList;
+    
+
+};
+
+class Cc3dBlendShapeChannel:public Cc3dObject
+{
+public:
+    Cc3dBlendShapeChannel(){
+    }
+    virtual~Cc3dBlendShapeChannel(){
+    
+    }
+    void addAnimCurve(const Cc3dAnimCurve){
+        
+    }
+protected:
+    vector<Cc3dAnimCurve*> m_animCurveList;
+    
+};
+
+class Cc3dBlendShape:public Cc3dObject
+{
+protected:
+    vector<Cc3dBlendShapeChannel*> m_blendShapeChannelList;
+public:
+    
+    
+
+};
+
 class Cc3dSkin:public Cc3dObject
 {
 protected:
@@ -256,6 +360,9 @@ public:
 	}
 	virtual ~Cc3dSkinMesh(){
 		if(m_skin)m_skin->release();
+        for(int i=0;i<(int)m_aniLayerList.size();i++){
+            if(m_aniLayerList[i])m_aniLayerList[i]->release();
+        }
 	}
     void addAniLayer(Cc3dAniLayer*aniLayer){
         m_aniLayerList.push_back(aniLayer);
