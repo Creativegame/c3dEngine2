@@ -1,3 +1,0 @@
-m_interval 0.100000
-m_startTime 0.000000
-m_endTime 1.000000

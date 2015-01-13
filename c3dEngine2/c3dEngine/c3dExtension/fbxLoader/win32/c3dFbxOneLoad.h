@@ -40,7 +40,8 @@ public:
 		if(lSdkManager!=NULL)destroyManager();
 	}
 	Cc3dSkinActor* convertToSkinActor(float aniFrameInterval){
-		
+       
+
 		//trianglulate
 		//TriangulateRecursive(lScene->GetRootNode());// Convert mesh, NURBS and patch into triangle mesh
 

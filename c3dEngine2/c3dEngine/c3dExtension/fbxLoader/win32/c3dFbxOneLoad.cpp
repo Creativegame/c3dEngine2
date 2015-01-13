@@ -895,11 +895,6 @@ void Cc3dFbxOneLoad::GetSmoothing(FbxManager* pSdkManager, FbxNode* pNode, bool 
 		FbxArray<FbxString*> mAnimStackNameArray;
 		lScene->FillAnimStackNameArray(mAnimStackNameArray);
 		const int lAnimStackCount = mAnimStackNameArray.GetCount();
-		if(aniFrameInterval==0){
-            m_isNoAnimation=true;
-        }else{
-            m_isNoAnimation=false;
-        }
         if(m_isNoAnimation){
             //bake static model (the very first frame)
 			assert(lAnimStackCount>0);

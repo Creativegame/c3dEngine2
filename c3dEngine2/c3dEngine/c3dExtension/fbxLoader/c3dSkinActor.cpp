@@ -571,7 +571,8 @@ void Cc3dSkinMesh::doExport(string filePath,bool valueOnly){
 		scaleX=this->getTransform()->getScaleX();
 		scaleY=this->getTransform()->getScaleY();
 		scaleZ=this->getTransform()->getScaleZ();
-		fprintKey(fp,valueOnly,"scale");fprintf(fp," %f %f %f",scaleX,scaleY,scaleZ);
+		fprintKey(fp,valueOnly,"scale");fprintf(fp," %f %f %f",scaleX,scaleY,scaleZ);fprintf(fp,"\n");
+        fprintKey(fp,valueOnly,"m_aniLayerList.size");fprintf(fp," %i",(int)m_aniLayerList.size());
 		//--------------------------close file
 		fclose(fp);
 		//------------------m_skin
@@ -585,6 +586,12 @@ void Cc3dSkinMesh::doExport(string filePath,bool valueOnly){
 			string numStr=numberToStr(i);
 			skinSubMesh->doExport(folderPath+"/m_skinSubMesh_"+numStr,valueOnly);
 		}
+        //------------------m_aniLayerList
+        int nAniLayer=(int)m_aniLayerList.size();
+        for(int i=0;i<nAniLayer;i++){
+            string numStr=numberToStr(i);
+            m_aniLayerList[i]->doExport(folderPath+"/m_aniLayer_"+numStr,valueOnly);
+        }
 
 	}else{
 		cout<<string("")+"warning: create path: "+folderFullPath+ " failed!"<<endl;
@@ -657,6 +664,11 @@ void Cc3dSkinMesh::doImport(string filePath,bool valueOnly){
         transform->autorelease();
 		transform->init(RTmat,scaleX,scaleY,scaleZ);
 		this->setTransform(transform);
+        //aniLayer count
+        int t_nAniLayer;
+        fskipOneStr(fp,valueOnly);
+        fscanf(fp,"%i",&t_nAniLayer);
+        if(!valueOnly)assert(string(tCharBuffer)=="m_aniLayerList.size");
 		//--------------------------close file
 		fclose(fp);
 		//------------------m_skin
@@ -675,6 +687,15 @@ void Cc3dSkinMesh::doImport(string filePath,bool valueOnly){
 			this->addSubMesh(p);
 			p->doImport(folderPath+"/m_skinSubMesh_"+numStr,valueOnly);
 		}
+        //------------------m_aniLayerList
+        assert(m_aniLayerList.empty());
+        for(int i=0;i<t_nAniLayer;i++){
+            string numStr=numberToStr(i);
+            Cc3dAniLayer*p=new Cc3dAniLayer();
+            p->autorelease();
+            this->addAniLayer(p);
+            p->doImport(folderPath+"/m_aniLayer_"+numStr,valueOnly);
+        }
 	}else{
 		cout<<string("")+"warning: create path: "+folderFullPath+ " failed!"<<endl;
 		assert(false);

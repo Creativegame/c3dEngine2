@@ -56,9 +56,9 @@ void initGame(){
     }
 
 	//load fbx
-	string fbxFilePath="fbxLoader_static_resource/apple.fbx";
-	float aniFrameInterval=1.0f/10;//1.0f/25;//frame interval value we want (second)
-	Cc3dSkinActor*actor=Cc3dFbxLoader::sharedFbxLoader()->load(fbxFilePath.c_str(),aniFrameInterval);
+    string fileNameWithoutExt="apple";
+	string fbxFilePath="fbxLoader_static_resource/"+fileNameWithoutExt+".fbx";//"fbxLoader_static_resource/apple.fbx";
+	Cc3dSkinActor*actor=Cc3dFbxLoader::sharedFbxLoader()->load(fbxFilePath.c_str(),0);//note: export to static format must use 0
 	//actor is just for export, no need to fully set up and add to scene
 	// actor->setPos(Cc3dVector4(0,0,0,1));
 	// actor->setLight(light0);
@@ -74,9 +74,9 @@ void initGame(){
 	//export values only
 	{
 #if (C3D_TARGET_PLATFORM == C3D_PLATFORM_WIN32) 
-		string exportPath="export/apple_cfc";
+		string exportPath="export/"+fileNameWithoutExt+"_cfc";
 #elif (C3D_TARGET_PLATFORM == C3D_PLATFORM_IOS) 
-		string exportPath=Cc3dDocuments::sharedDocuments()->getDocumentsPath()+"/export/apple_cfc";
+		string exportPath=Cc3dDocuments::sharedDocuments()->getDocumentsPath()+"/export/"+fileNameWithoutExt+"_cfc";
 #else
 		assert(false);
 #endif
@@ -88,9 +88,9 @@ void initGame(){
 	//export values and keys
 	{
 #if (C3D_TARGET_PLATFORM == C3D_PLATFORM_WIN32) 
-		string exportPath="export/apple_readable_cfc";
+		string exportPath="export/"+fileNameWithoutExt+"_readable_cfc";
 #elif (C3D_TARGET_PLATFORM == C3D_PLATFORM_IOS) 
-		string exportPath=Cc3dDocuments::sharedDocuments()->getDocumentsPath()+"/export/apple_readable_cfc";
+		string exportPath=Cc3dDocuments::sharedDocuments()->getDocumentsPath()+"/export/"+fileNameWithoutExt+"_readable_cfc";
 #else
 		assert(false);
 #endif
