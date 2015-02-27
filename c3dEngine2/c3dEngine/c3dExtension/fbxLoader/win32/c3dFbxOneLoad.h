@@ -10,7 +10,8 @@ using namespace std;
 #include "fbxLoader/c3dSkinActor.h"
 
 //about fbx skin animation principle, see: http://user.qzone.qq.com/350479720/blog/1349982989
-
+//bug:
+//models in 3dmax should not have redundant material, Multi/Sub-Object material should only contain material balls that actually in use. or there will be errors when export fbx to my own formate.
 Cc3dMatrix4 FbxAMatrixToCc3dMatrix4(const FbxAMatrix&m);
 
 class Cc3dFbxOneLoad:public Cc3dObject
@@ -20,6 +21,7 @@ public:
 	FbxManager* lSdkManager;
 	FbxScene* lScene;
 	Cc3dSkinActor* m_actor;
+    bool m_isNoAnimation;
 	//
 	Cc3dFbxOneLoad(){
 		fbxFileName=NULL;
@@ -31,6 +33,7 @@ public:
 			m_actor->autorelease();
 			m_actor->retain();
 		}
+        m_isNoAnimation=false;
 	}
 	~Cc3dFbxOneLoad(){
 		assert(m_actor);
@@ -38,7 +41,8 @@ public:
 		if(lSdkManager!=NULL)destroyManager();
 	}
 	Cc3dSkinActor* convertToSkinActor(float aniFrameInterval){
-		
+       
+
 		//trianglulate
 		//TriangulateRecursive(lScene->GetRootNode());// Convert mesh, NURBS and patch into triangle mesh
 
@@ -51,10 +55,14 @@ public:
 		makeSubMeshSetForEachNode(lScene->GetRootNode());
 		//bake animation
 		bakeAnimation(aniFrameInterval);
+        //attach target mesh to blendShapeChannel
+        attachMeshToTargetShapes(true);
+        
 		//m_actor done
 		return m_actor;
 		
 	}
+    void attachMeshToTargetShapes(bool isHideTargetShapeMeshes);
 	void bakeAnimation(float aniFrameInterval);
 	void Init_and_load(const char* _fbxFileName);
 	void makeSubMeshSetForThisNode(FbxNode* pNode);
@@ -67,6 +75,7 @@ public:
 		FbxTime& pTime, 
 		FbxPose* pPose,
 		int animStackIndex);
+    void ComputeShapeDeformation(FbxMesh* pMesh, FbxTime& pTime, FbxAnimLayer * pAnimLayer, int animStackIndex);
 	void InitializeSdkObjects(FbxManager*& pSdkManager, FbxScene*& pScene);
 	bool LoadScene(FbxManager* pManager, FbxDocument* pScene, const char* pFilename);
 	void DestroySdkObjects(FbxManager* &pSdkManager);

@@ -77,7 +77,7 @@ public:
 
     bool init(){
 		//----fbx model
-		m_actor=Cc3dFbxLoader::sharedFbxLoader()->load("fbxLoader_static_resource/apple.fbx",0);//set the last parameter to ZERO to read static model
+		m_actor=Cc3dFbxLoader::sharedFbxLoader()->load("fbxLoader_static_resource/seg1.fbx",0);//set the last parameter to ZERO to read static model
 	
 		m_actor->setPos(Cc3dVector4(0,0,0,1));
 		m_actor->setLight(light0);

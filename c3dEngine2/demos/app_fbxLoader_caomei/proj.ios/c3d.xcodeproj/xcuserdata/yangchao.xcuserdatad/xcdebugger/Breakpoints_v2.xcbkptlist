@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../c3dEngine/c3dExtension/fbxLoader/win32/c3dFbxOneLoad.cpp"
+            timestampString = "446731703.869906"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1336"
+            endingLineNumber = "1336"
+            landmarkName = "Cc3dFbxOneLoad::DrawMesh(FbxNode* pNode, FbxTime&amp; pTime, FbxAnimLayer* pAnimLayer,int animStackIndex, FbxAMatrix&amp; pGlobalPosition, FbxPose* pPose)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../c3dEngine/c3dExtension/fbxLoader/win32/c3dFbxOneLoad.cpp"
+            timestampString = "446731703.869906"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1287"
+            endingLineNumber = "1287"
+            landmarkName = "Cc3dFbxOneLoad::DrawMesh(FbxNode* pNode, FbxTime&amp; pTime, FbxAnimLayer* pAnimLayer,int animStackIndex, FbxAMatrix&amp; pGlobalPosition, FbxPose* pPose)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../c3dEngine/c3dExtension/fbxLoader/win32/c3dFbxOneLoad.cpp"
+            timestampString = "446731703.869906"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1306"
+            endingLineNumber = "1306"
+            landmarkName = "Cc3dFbxOneLoad::DrawMesh(FbxNode* pNode, FbxTime&amp; pTime, FbxAnimLayer* pAnimLayer,int animStackIndex, FbxAMatrix&amp; pGlobalPosition, FbxPose* pPose)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../c3dEngine/c3dExtension/fbxLoader/win32/c3dFbxOneLoad.cpp"
+            timestampString = "446731703.869906"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1320"
+            endingLineNumber = "1320"
+            landmarkName = "Cc3dFbxOneLoad::DrawMesh(FbxNode* pNode, FbxTime&amp; pTime, FbxAnimLayer* pAnimLayer,int animStackIndex, FbxAMatrix&amp; pGlobalPosition, FbxPose* pPose)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../c3dEngine/c3dExtension/fbxLoader/win32/c3dFbxOneLoad.cpp"
+            timestampString = "446731703.869906"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1333"
+            endingLineNumber = "1333"
+            landmarkName = "Cc3dFbxOneLoad::DrawMesh(FbxNode* pNode, FbxTime&amp; pTime, FbxAnimLayer* pAnimLayer,int animStackIndex, FbxAMatrix&amp; pGlobalPosition, FbxPose* pPose)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../c3dEngine/c3dExtension/fbxLoader/win32/c3dFbxOneLoad.cpp"
+            timestampString = "446731703.869906"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1309"
+            endingLineNumber = "1309"
+            landmarkName = "Cc3dFbxOneLoad::DrawMesh(FbxNode* pNode, FbxTime&amp; pTime, FbxAnimLayer* pAnimLayer,int animStackIndex, FbxAMatrix&amp; pGlobalPosition, FbxPose* pPose)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../c3dEngine/c3dExtension/fbxLoader/win32/c3dFbxOneLoad.cpp"
+            timestampString = "446731703.869906"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1315"
+            endingLineNumber = "1315"
+            landmarkName = "Cc3dFbxOneLoad::DrawMesh(FbxNode* pNode, FbxTime&amp; pTime, FbxAnimLayer* pAnimLayer,int animStackIndex, FbxAMatrix&amp; pGlobalPosition, FbxPose* pPose)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../c3dEngine/c3dExtension/fbxLoader/win32/c3dFbxOneLoad.cpp"
+            timestampString = "446731703.869906"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1330"
+            endingLineNumber = "1330"
+            landmarkName = "Cc3dFbxOneLoad::DrawMesh(FbxNode* pNode, FbxTime&amp; pTime, FbxAnimLayer* pAnimLayer,int animStackIndex, FbxAMatrix&amp; pGlobalPosition, FbxPose* pPose)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../c3dEngine/c3dExtension/fbxLoader/win32/c3dFbxOneLoad.cpp"
+            timestampString = "446731703.869906"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1328"
+            endingLineNumber = "1328"
+            landmarkName = "Cc3dFbxOneLoad::DrawMesh(FbxNode* pNode, FbxTime&amp; pTime, FbxAnimLayer* pAnimLayer,int animStackIndex, FbxAMatrix&amp; pGlobalPosition, FbxPose* pPose)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../c3dEngine/c3dExtension/fbxLoader/win32/c3dFbxOneLoad.cpp"
+            timestampString = "446731703.869906"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1441"
+            endingLineNumber = "1441"
+            landmarkName = "Cc3dFbxOneLoad::ComputeLinearDeformation_simplify(FbxAMatrix&amp; pGlobalPosition, FbxMesh* pMesh, FbxTime&amp; pTime, FbxPose* pPose, int animStackIndex)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../c3dEngine/c3dExtension/fbxLoader/win32/c3dFbxOneLoad.cpp"
+            timestampString = "446731703.869906"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1440"
+            endingLineNumber = "1440"
+            landmarkName = "Cc3dFbxOneLoad::ComputeLinearDeformation_simplify(FbxAMatrix&amp; pGlobalPosition, FbxMesh* pMesh, FbxTime&amp; pTime, FbxPose* pPose, int animStackIndex)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../c3dEngine/c3dExtension/fbxLoader/win32/c3dFbxOneLoad.cpp"
+            timestampString = "446731703.869906"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1089"
+            endingLineNumber = "1089"
+            landmarkName = "Cc3dFbxOneLoad::DrawNodeRecursive(FbxNode* pNode, FbxTime&amp; pTime, FbxAnimLayer* pAnimLayer,int animStackIndex, FbxAMatrix&amp; pParentGlobalPosition, FbxPose* pPose)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../c3dEngine/c3dExtension/fbxLoader/win32/c3dFbxOneLoad.cpp"
+            timestampString = "446731703.869906"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1293"
+            endingLineNumber = "1293"
+            landmarkName = "Cc3dFbxOneLoad::DrawMesh(FbxNode* pNode, FbxTime&amp; pTime, FbxAnimLayer* pAnimLayer,int animStackIndex, FbxAMatrix&amp; pGlobalPosition, FbxPose* pPose)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../c3dEngine/c3dExtension/fbxLoader/win32/c3dFbxOneLoad.cpp"
+            timestampString = "446731703.869906"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1297"
+            endingLineNumber = "1297"
+            landmarkName = "Cc3dFbxOneLoad::DrawMesh(FbxNode* pNode, FbxTime&amp; pTime, FbxAnimLayer* pAnimLayer,int animStackIndex, FbxAMatrix&amp; pGlobalPosition, FbxPose* pPose)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../c3dEngine/c3dExtension/fbxLoader/win32/c3dFbxOneLoad.cpp"
+            timestampString = "446731703.869906"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1291"
+            endingLineNumber = "1291"
+            landmarkName = "Cc3dFbxOneLoad::DrawMesh(FbxNode* pNode, FbxTime&amp; pTime, FbxAnimLayer* pAnimLayer,int animStackIndex, FbxAMatrix&amp; pGlobalPosition, FbxPose* pPose)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../c3dEngine/c3dExtension/fbxLoader/win32/c3dFbxOneLoad.cpp"
+            timestampString = "446731703.869906"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1292"
+            endingLineNumber = "1292"
+            landmarkName = "Cc3dFbxOneLoad::DrawMesh(FbxNode* pNode, FbxTime&amp; pTime, FbxAnimLayer* pAnimLayer,int animStackIndex, FbxAMatrix&amp; pGlobalPosition, FbxPose* pPose)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../c3dEngine/c3dExtension/fbxLoader/win32/c3dFbxOneLoad.cpp"
+            timestampString = "446731703.869906"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1295"
+            endingLineNumber = "1295"
+            landmarkName = "Cc3dFbxOneLoad::DrawMesh(FbxNode* pNode, FbxTime&amp; pTime, FbxAnimLayer* pAnimLayer,int animStackIndex, FbxAMatrix&amp; pGlobalPosition, FbxPose* pPose)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../c3dEngine/c3dExtension/fbxLoader/win32/c3dFbxOneLoad.cpp"
+            timestampString = "446731703.869906"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1299"
+            endingLineNumber = "1299"
+            landmarkName = "Cc3dFbxOneLoad::DrawMesh(FbxNode* pNode, FbxTime&amp; pTime, FbxAnimLayer* pAnimLayer,int animStackIndex, FbxAMatrix&amp; pGlobalPosition, FbxPose* pPose)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>

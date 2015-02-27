@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "Cc3dFbxOneLoad::DrawNodeRecursive(fbxsdk_2015_1::FbxNode*, fbxsdk_2015_1::FbxTime&amp;, fbxsdk_2015_1::FbxAnimLayer*, int, fbxsdk_2015_1::FbxAMatrix&amp;, fbxsdk_2015_1::FbxPose*):c3dFbxOneLoad.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "Cc3dFbxOneLoad::DrawMesh(fbxsdk_2015_1::FbxNode*, fbxsdk_2015_1::FbxTime&amp;, fbxsdk_2015_1::FbxAnimLayer*, int, fbxsdk_2015_1::FbxAMatrix&amp;, fbxsdk_2015_1::FbxPose*):c3dFbxOneLoad.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "globalPositionMat">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>

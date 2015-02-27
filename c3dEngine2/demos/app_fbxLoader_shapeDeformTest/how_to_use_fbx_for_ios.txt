@@ -1,0 +1,11 @@
+to use FBX 2015.1 for iOS:
+1, add .h and .lib to project.
+2, add search path for .h and .lib 
+3, Build Phases->Link Binary With Libraries->add 
+libiconv.dylib 
+libiconv.2.dylib
+libiconv.2.4.0.dylib
+4, Deployment Target select 6.0 or higher.
+5, Valid Architectures: armv7, armv7s, i386, arm64.
+6, Language-C++ -> C++ Standard Library, change to libc++（LLVM C++ standard library with C++11 support）
+

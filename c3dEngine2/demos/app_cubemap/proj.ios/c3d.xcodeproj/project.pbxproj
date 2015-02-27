@@ -812,6 +812,7 @@
 					"$(SRCROOT)/../../../c3dEngine/c3dExtension",
 					"$(SRCROOT)/../../../c3dEngine/extension",
 					"$(SRCROOT)/../../../c3dEngine/thirdPart/bullet/bullet-2.82-r2704/src",
+					"$(SRCROOT)/../../../c3dEngine/thirdPart/FBX/FBX_iOS/FbxSdk/2015.1/include",
 				);
 				INFOPLIST_FILE = "c3d/c3d-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
@@ -846,6 +847,7 @@
 					"$(SRCROOT)/../../../c3dEngine/c3dExtension",
 					"$(SRCROOT)/../../../c3dEngine/extension",
 					"$(SRCROOT)/../../../c3dEngine/thirdPart/bullet/bullet-2.82-r2704/src",
+					"$(SRCROOT)/../../../c3dEngine/thirdPart/FBX/FBX_iOS/FbxSdk/2015.1/include",
 				);
 				INFOPLIST_FILE = "c3d/c3d-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;

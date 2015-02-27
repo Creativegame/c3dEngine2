@@ -457,7 +457,7 @@ bool Cc3dFbxOneLoad::LoadScene(FbxManager* pManager, FbxDocument* pScene, const 
 		}
 		Cc3dSkinMesh*mesh=new Cc3dSkinMesh();
 		mesh->autorelease();
-		mesh->setName(pNode->GetName());
+		mesh->setName(pNode->GetName());//use node name as mesh name
 		mesh->setFbxMeshPtr(lMesh);
 		//制作mesh
 		//每个材质对应一个subMesh
@@ -752,6 +752,41 @@ bool Cc3dFbxOneLoad::LoadScene(FbxManager* pManager, FbxDocument* pScene, const 
 		
 
 	}
+
+    void Cc3dFbxOneLoad::attachMeshToTargetShapes(bool isHideTargetShapeMeshes){
+        const int nMeshCount=m_actor->getMeshCount();
+        for(int i=0;i<nMeshCount;i++){
+            Cc3dSkinMesh*skinMesh=(Cc3dSkinMesh*)m_actor->getMeshByIndex(i);
+            if(skinMesh==NULL)continue;
+            const int nBlendShape=skinMesh->getBlendShapeCount();
+            for(int j=0;j<nBlendShape;j++){
+                Cc3dBlendShape*blendShape=skinMesh->getBlendShapeByIndex(j);
+                const int nBlendShapeChannel=blendShape->getBlendShapeChannelCount();
+                for(int k=0;k<nBlendShapeChannel;k++){
+                    Cc3dBlendShapeChannel*blendShapeChannel=blendShape->getBlendShapeChannelByIndex(k);
+                    const int nTargetShape=blendShapeChannel->getTargetShapeCount();
+                    for(int u=0;u<nTargetShape;u++){
+                        Cc3dTargetShape*targetShape=blendShapeChannel->getTargetShapeByIndex(u);
+                        const string&targetShapeName=targetShape->getTargetShapeName();
+                        FbxNode*lNode=lScene->FindNodeByName(FbxString(targetShapeName.c_str()));
+                        if(lNode==NULL){
+                            cout<<"warning: can not find mesh for targetShape "<<"'"<<targetShapeName<<"'"<<", it's normal data can not be obtained!"<<endl;
+                        }else{
+                            assert(lNode->GetMesh());
+                            Cc3dSkinMesh* mesh=(Cc3dSkinMesh*)m_actor->findSkinMeshByFbxMeshPtr(lNode->GetMesh());
+                            assert(mesh);
+                            targetShape->setTargetShapeMesh(mesh);
+                            if(isHideTargetShapeMeshes){
+                                mesh->setIsVisibleRecursively(false);
+                                mesh->setIsDoUpdateRecursively(false);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+    }
 	void Cc3dFbxOneLoad::makeSubMeshSetForEachNode(FbxNode* pNode)
 	{
 		FbxNodeAttribute* lNodeAttribute = pNode->GetNodeAttribute();
@@ -895,17 +930,18 @@ void Cc3dFbxOneLoad::GetSmoothing(FbxManager* pSdkManager, FbxNode* pNode, bool 
 		FbxArray<FbxString*> mAnimStackNameArray;
 		lScene->FillAnimStackNameArray(mAnimStackNameArray);
 		const int lAnimStackCount = mAnimStackNameArray.GetCount();
-		if(aniFrameInterval==0){
-			//bake static model (the very first frame)
+        if(m_isNoAnimation){
+            //bake static model (the very first frame)
 			assert(lAnimStackCount>0);
 			int animStackIndex=0;
 			FbxAnimStack *lCurrentAnimationStack;
 			lCurrentAnimationStack = lScene->FindMember<FbxAnimStack>(mAnimStackNameArray[animStackIndex]->Buffer());// lScene->FindMember(FBX_TYPE(FbxAnimStack), mAnimStackNameArray[animStackIndex]->Buffer());//2014-9-27
 			FbxTime fbxTime(0);//2014-9-27
             this->updateSkin(fbxTime,lCurrentAnimationStack,animStackIndex);
-
 			return;
-		}
+
+        
+        }
 		for(int i=0;i<lAnimStackCount;i++){
 			int animStackIndex=i;
 	
@@ -953,10 +989,10 @@ void Cc3dFbxOneLoad::GetSmoothing(FbxManager* pSdkManager, FbxNode* pNode, bool 
 					stopTime  = lTimeLineTimeSpan.GetStop();
 				}//得到startTime和stopTime
 			}
-			//	cout<<"startTime:"<<startTime.GetMilliSeconds()<<endl;
-			//	cout<<"stopTime:"<<stopTime.GetMilliSeconds()<<endl;
-			//	cout<<"startTime:"<<startTime.GetSecondDouble()<<endl;
-			//	cout<<"stopTime:"<<stopTime.GetSecondDouble()<<endl;
+				cout<<"startTime (milliSeconds):"<<startTime.GetMilliSeconds()<<endl;
+				cout<<"stopTime (milliSeconds):"<<stopTime.GetMilliSeconds()<<endl;
+				cout<<"startTime (seconds):"<<startTime.GetSecondDouble()<<endl;
+				cout<<"stopTime (seconds):"<<stopTime.GetSecondDouble()<<endl;
 			//
 			//create aniLayer info
 			Cc3dAniLayerInfo*aniLayerInfo=new Cc3dAniLayerInfo();
@@ -1044,8 +1080,10 @@ void Cc3dFbxOneLoad::GetSmoothing(FbxManager* pSdkManager, FbxNode* pNode, bool 
 	{
 		//{the scale component of globalPosition matrix is equals to the product of scale factors when fbx file import and export via 3dmax }
 		FbxAMatrix lGlobalPosition = GetGlobalPosition(pNode, pTime,pPose, &pParentGlobalPosition);
-
-		if (pNode->GetNodeAttribute())
+		
+        
+        
+        if (pNode->GetNodeAttribute())
 		{
 			// Geometry offset.
 			// it is not inherited by the children.
@@ -1246,9 +1284,26 @@ void Cc3dFbxOneLoad::GetSmoothing(FbxManager* pSdkManager, FbxNode* pNode, bool 
 		{
 			Cc3dSkinMesh* mesh=(Cc3dSkinMesh*)m_actor->findSkinMeshByFbxMeshPtr(lMesh);
 			if(mesh){
-				Cc3dMatrix4 globalPositionMat=FbxAMatrixToCc3dMatrix4(pGlobalPosition);
-				mesh->setRTSmat(globalPositionMat);
-			}
+                if(m_isNoAnimation){
+                    Cc3dMatrix4 globalPositionMat=FbxAMatrixToCc3dMatrix4(pGlobalPosition);
+                    ////    globalPositionMat.print();
+                    mesh->setRTSmat(globalPositionMat);
+                }else{//animation model
+                    Cc3dMatrix4 globalPositionMat=FbxAMatrixToCc3dMatrix4(pGlobalPosition);
+                    ////    globalPositionMat.print();
+                    int meshAniLayerCount=mesh->getAniLayerCount();
+                    if(animStackIndex>=meshAniLayerCount){//aniLayer not exist
+                        //create aniLayer
+                        Cc3dAniLayer*aniLayer=new Cc3dAniLayer();
+                        aniLayer->autorelease();
+                        mesh->addAniLayer(aniLayer);
+                        assert((int)mesh->getAniLayerCount()==animStackIndex+1);
+                    }
+                    Cc3dAniLayer*aniLayer=mesh->getAniLayerByIndex(animStackIndex);
+                    aniLayer->addAniFrame(Cc3dAniFrame(globalPositionMat,(float)pTime.GetMilliSeconds()/1000));
+
+                }
+            }
 		}
 		const int lVertexCount = lMesh->GetControlPointsCount();
 		const int triangleCount = lMesh->GetPolygonCount();
@@ -1259,7 +1314,10 @@ void Cc3dFbxOneLoad::GetSmoothing(FbxManager* pSdkManager, FbxNode* pNode, bool 
 		}
 		const bool lHasShape = lMesh->GetShapeCount() > 0;
 		if(lHasShape){
-			cout<<"warning: not support shape deform yet!"<<endl;
+	//		cout<<"warning: not support shape deform yet!"<<endl;
+            //Deform the vertex array with the shapes
+            ComputeShapeDeformation(lMesh, pTime, pAnimLayer, animStackIndex);
+            
 		}
 		//获得hasSkin
 		bool HasSkin=getHasDeformer(lMesh);
@@ -1436,7 +1494,263 @@ void Cc3dFbxOneLoad::GetSmoothing(FbxManager* pSdkManager, FbxNode* pNode, bool 
 		}
 		
 	}
-	
+
+// Deform the vertex array with the shapes contained in the mesh.
+void Cc3dFbxOneLoad::ComputeShapeDeformation(FbxMesh* pMesh, FbxTime& pTime, FbxAnimLayer * pAnimLayer, int animStackIndex)
+{
+    
+    int lBlendShapeDeformerCount = pMesh->GetDeformerCount(FbxDeformer::eBlendShape);
+    for(int lBlendShapeIndex = 0; lBlendShapeIndex<lBlendShapeDeformerCount; ++lBlendShapeIndex)
+    {
+        FbxBlendShape* lBlendShape = (FbxBlendShape*)pMesh->GetDeformer(lBlendShapeIndex, FbxDeformer::eBlendShape);
+        
+
+        Cc3dSkinMesh* mesh=(Cc3dSkinMesh*)m_actor->findSkinMeshByFbxMeshPtr(pMesh);
+        assert(mesh);
+        if(lBlendShapeIndex>=mesh->getBlendShapeCount())
+        {
+            Cc3dBlendShape*blendShape=new Cc3dBlendShape();
+            blendShape->autorelease();
+            mesh->addBlendShape(blendShape);
+        }
+
+        
+        int lBlendShapeChannelCount = lBlendShape->GetBlendShapeChannelCount();
+        for(int lChannelIndex = 0; lChannelIndex<lBlendShapeChannelCount; ++lChannelIndex)
+        {
+            FbxBlendShapeChannel* lChannel = lBlendShape->GetBlendShapeChannel(lChannelIndex);
+            
+            Cc3dBlendShape*blendShape=mesh->getBlendShapeByIndex(lBlendShapeIndex);
+            if(lChannelIndex>=blendShape->getBlendShapeChannelCount())
+            {
+                Cc3dBlendShapeChannel*blendShapeChannel=new Cc3dBlendShapeChannel();
+                blendShapeChannel->autorelease();
+                blendShape->addBlendShapeChannel(blendShapeChannel);
+            }
+            
+            
+            if(lChannel)
+            {
+                // Get the percentage of influence on this channel.
+                FbxAnimCurve* lFCurve = pMesh->GetShapeChannel(lBlendShapeIndex, lChannelIndex, pAnimLayer);
+                if (!lFCurve) continue;
+                double lWeight = lFCurve->Evaluate(pTime);
+                Cc3dBlendShapeChannel*blendShapeChannel=blendShape->getBlendShapeChannelByIndex(lChannelIndex);
+                if(animStackIndex>=blendShapeChannel->getAnimCurveCount())
+                {
+                    Cc3dAnimCurve*aniCurve=new Cc3dAnimCurve();
+                    aniCurve->autorelease();
+                    blendShapeChannel->addAnimCurve(aniCurve);
+                }
+                const float weight=maxf(0.000001,minf(100,lWeight));
+                blendShapeChannel->getAnimCurveByIndex(animStackIndex)->addAniCurveFrame(Cc3dAnimCurveFrame(weight, (float)pTime.GetMilliSeconds()/1000));
+             ///   cout<<"----"<<endl;
+             ///   cout<<"weight:"<<weight<<endl;
+                
+//                 If there is only one targetShape on this channel, the influence is easy to calculate:
+//                 influence = (targetShape - baseGeometry) * weight * 0.01
+//                 dstGeometry = baseGeometry + influence
+//                 
+//                 But if there are more than one targetShapes on this channel, this is an in-between
+//                 blendshape, also called progressive morph. The calculation of influence is different.
+//                 
+//                 For example, given two in-between targets, the full weight percentage of first target
+//                 is 50, and the full weight percentage of the second target is 100.
+//                 When the weight percentage reach 50, the base geometry is already be fully morphed
+//                 to the first target shape. When the weight go over 50, it begin to morph from the
+//                 first target shape to the second target shape.
+//                 
+//                 To calculate influence when the weight percentage is 25:
+//                 1. 25 falls in the scope of 0 and 50, the morphing is from base geometry to the first target.
+//                 2. And since 25 is already half way between 0 and 50, so the real weight percentage change to
+//                 the first target is 50.
+//                 influence = (firstTargetShape - baseGeometry) * (25-0)/(50-0) * 100
+//                 dstGeometry = baseGeometry + influence
+//                 
+//                 To calculate influence when the weight percentage is 75:
+//                 1. 75 falls in the scope of 50 and 100, the morphing is from the first target to the second.
+//                 2. And since 75 is already half way between 50 and 100, so the real weight percentage change 
+//                 to the second target is 50.
+//                 influence = (secondTargetShape - firstTargetShape) * (75-50)/(100-50) * 100
+//                 dstGeometry = firstTargetShape + influence
+ 
+                // Find the two shape indices for influence calculation according to the weight.
+                // Consider index of base geometry as -1.
+                
+                int lShapeCount = lChannel->GetTargetShapeCount();
+                double* lFullWeights = lChannel->GetTargetShapeFullWeights();
+                blendShapeChannel->m_targetShapeFullWeights.resize(lShapeCount);
+                for(int i=0;i<(int)blendShapeChannel->m_targetShapeFullWeights.size();i++){
+                    blendShapeChannel->m_targetShapeFullWeights[i]=lFullWeights[i];
+                    if(blendShapeChannel->m_targetShapeFullWeights[i]>=99.99999){
+                        blendShapeChannel->m_targetShapeFullWeights[i]=100.00001;
+                        
+                    }
+                    if(blendShapeChannel->m_targetShapeFullWeights[i]<0.00001){
+                        blendShapeChannel->m_targetShapeFullWeights[i]=-0.00001;
+                    }
+                }
+                
+                
+                const int lTargetShapeCount=lChannel->GetTargetShapeCount();
+                for(int lTargetShapeIndex=0;lTargetShapeIndex<lTargetShapeCount;lTargetShapeIndex++){
+                    FbxShape* lTargetShape=lChannel->GetTargetShape(lTargetShapeIndex);
+                    string targetShapeName=lTargetShape->GetName();
+                    if(lTargetShapeIndex>=blendShapeChannel->getTargetShapeCount()){
+                        Cc3dTargetShape*targetShape=new Cc3dTargetShape();
+                        targetShape->autorelease();
+                        blendShapeChannel->addTargetShape(targetShape);
+                        targetShape->setTargetShapeName(targetShapeName);
+                        //control points
+                        const int controlPointsCount=lTargetShape->GetControlPointsCount();
+                        for(int j=0;j<controlPointsCount;j++){
+                            FbxVector4 lPos=lTargetShape->GetControlPoints()[j];
+                            Cc3dVector4 pos(lPos[0],lPos[1],lPos[2],1);
+                            targetShape->m_controlPoints.push_back(pos);
+                        }
+               
+                        
+                        
+                        //controlPoints indices
+                        //currently, targetShape->m_controlPointsIndices is no use
+                        const int controlPointIndicesCount=lTargetShape->GetControlPointIndicesCount();
+                        for(int j=0;j<controlPointIndicesCount;j++){
+                            int lIndex=lTargetShape->GetControlPointIndices()[j];
+                            targetShape->m_controlPointsIndices.push_back(lIndex);
+                            
+                        }
+                    }
+                
+                }
+            
+            }//If lChannel is valid
+        }//For each blend shape channel
+    }//For each blend shape deformer
+}
+/*
+// Deform the vertex array with the shapes contained in the mesh.
+void Cc3dFbxOneLoad::ComputeShapeDeformation(FbxMesh* pMesh, FbxTime& pTime, FbxAnimLayer * pAnimLayer, int animStackIndex)
+{
+    
+    int lBlendShapeDeformerCount = pMesh->GetDeformerCount(FbxDeformer::eBlendShape);
+    for(int lBlendShapeIndex = 0; lBlendShapeIndex<lBlendShapeDeformerCount; ++lBlendShapeIndex)
+    {
+        FbxBlendShape* lBlendShape = (FbxBlendShape*)pMesh->GetDeformer(lBlendShapeIndex, FbxDeformer::eBlendShape);
+        
+        int lBlendShapeChannelCount = lBlendShape->GetBlendShapeChannelCount();
+        for(int lChannelIndex = 0; lChannelIndex<lBlendShapeChannelCount; ++lChannelIndex)
+        {
+            FbxBlendShapeChannel* lChannel = lBlendShape->GetBlendShapeChannel(lChannelIndex);
+            if(lChannel)
+            {
+                // Get the percentage of influence on this channel.
+                FbxAnimCurve* lFCurve = pMesh->GetShapeChannel(lBlendShapeIndex, lChannelIndex, pAnimLayer);
+                if (!lFCurve) continue;
+                double lWeight = lFCurve->Evaluate(pTime);
+                
+                
+                //                 If there is only one targetShape on this channel, the influence is easy to calculate:
+                //                 influence = (targetShape - baseGeometry) * weight * 0.01
+                //                 dstGeometry = baseGeometry + influence
+                //
+                //                 But if there are more than one targetShapes on this channel, this is an in-between
+                //                 blendshape, also called progressive morph. The calculation of influence is different.
+                //
+                //                 For example, given two in-between targets, the full weight percentage of first target
+                //                 is 50, and the full weight percentage of the second target is 100.
+                //                 When the weight percentage reach 50, the base geometry is already be fully morphed
+                //                 to the first target shape. When the weight go over 50, it begin to morph from the
+                //                 first target shape to the second target shape.
+                //
+                //                 To calculate influence when the weight percentage is 25:
+                //                 1. 25 falls in the scope of 0 and 50, the morphing is from base geometry to the first target.
+                //                 2. And since 25 is already half way between 0 and 50, so the real weight percentage change to
+                //                 the first target is 50.
+                //                 influence = (firstTargetShape - baseGeometry) * (25-0)/(50-0) * 100
+                //                 dstGeometry = baseGeometry + influence
+                //
+                //                 To calculate influence when the weight percentage is 75:
+                //                 1. 75 falls in the scope of 50 and 100, the morphing is from the first target to the second.
+                //                 2. And since 75 is already half way between 50 and 100, so the real weight percentage change
+                //                 to the second target is 50.
+                //                 influence = (secondTargetShape - firstTargetShape) * (75-50)/(100-50) * 100
+                //                 dstGeometry = firstTargetShape + influence
+                
+                // Find the two shape indices for influence calculation according to the weight.
+                // Consider index of base geometry as -1.
+                
+                int lShapeCount = lChannel->GetTargetShapeCount();
+                double* lFullWeights = lChannel->GetTargetShapeFullWeights();
+                
+                // Find out which scope the lWeight falls in.
+                int lStartIndex = -1;
+                int lEndIndex = -1;
+                for(int lShapeIndex = 0; lShapeIndex<lShapeCount; ++lShapeIndex)
+                {
+                    if(lWeight > 0 && lWeight <= lFullWeights[0])
+                    {
+                        lEndIndex = 0;
+                        break;
+                    }
+                    if(lWeight > lFullWeights[lShapeIndex] && lWeight < lFullWeights[lShapeIndex+1])
+                    {
+                        lStartIndex = lShapeIndex;
+                        lEndIndex = lShapeIndex + 1;
+                        break;
+                    }
+                }
+                
+                FbxShape* lStartShape = NULL;
+                FbxShape* lEndShape = NULL;
+                if(lStartIndex > -1)
+                {
+                    lStartShape = lChannel->GetTargetShape(lStartIndex);
+                }
+                if(lEndIndex > -1)
+                {
+                    lEndShape = lChannel->GetTargetShape(lEndIndex);
+                }
+                
+                //The weight percentage falls between base geometry and the first target shape.
+                if(lStartIndex == -1 && lEndShape)
+                {
+                    double lEndWeight = lFullWeights[0];
+                    // Calculate the real weight.
+                    lWeight = (lWeight/lEndWeight) * 100;
+                    // Initialize the lDstVertexArray with vertex of base geometry.
+                    memcpy(lDstVertexArray, lSrcVertexArray, lVertexCount * sizeof(FbxVector4));
+                    for (int j = 0; j < lVertexCount; j++)
+                    {
+                        // Add the influence of the shape vertex to the mesh vertex.
+                        FbxVector4 lInfluence = (lEndShape->GetControlPoints()[j] - lSrcVertexArray[j]) * lWeight * 0.01;
+                        lDstVertexArray[j] += lInfluence;
+                    }
+                }
+                //The weight percentage falls between two target shapes.
+                else if(lStartShape && lEndShape)
+                {
+                    double lStartWeight = lFullWeights[lStartIndex];
+                    double lEndWeight = lFullWeights[lEndIndex];
+                    // Calculate the real weight.
+                    lWeight = ((lWeight-lStartWeight)/(lEndWeight-lStartWeight)) * 100;
+                    // Initialize the lDstVertexArray with vertex of the previous target shape geometry.
+                    memcpy(lDstVertexArray, lStartShape->GetControlPoints(), lVertexCount * sizeof(FbxVector4));
+                    for (int j = 0; j < lVertexCount; j++)
+                    {
+                        // Add the influence of the shape vertex to the previous shape vertex.
+                        FbxVector4 lInfluence = (lEndShape->GetControlPoints()[j] - lStartShape->GetControlPoints()[j]) * lWeight * 0.01;
+                        lDstVertexArray[j] += lInfluence;
+                    }	
+                }
+            }//If lChannel is valid
+        }//For each blend shape channel
+    }//For each blend shape deformer
+    
+    memcpy(pVertexArray, lDstVertexArray, lVertexCount * sizeof(FbxVector4));
+    
+    delete [] lDstVertexArray;
+}
+*/
 
 	// Scale all the elements of a matrix.
 	void Cc3dFbxOneLoad::MatrixScale(FbxAMatrix& pMatrix, double pValue)
@@ -1476,7 +1790,7 @@ void Cc3dFbxOneLoad::GetSmoothing(FbxManager* pSdkManager, FbxNode* pNode, bool 
 		}
 	}
 
-	
+/*
 //Compute the transform matrix that the cluster will transform the vertex.
 	void Cc3dFbxOneLoad::ComputeClusterDeformation(FbxAMatrix& pGlobalPosition, 
 		FbxMesh* pMesh,
@@ -1521,4 +1835,77 @@ void Cc3dFbxOneLoad::GetSmoothing(FbxManager* pSdkManager, FbxNode* pNode, bool 
 		pVertexTransformMatrix = lClusterRelativeCurrentPositionInverse * lClusterRelativeInitPosition;
 
 
-	}                 
+	}    
+ */
+//Compute the transform matrix that the cluster will transform the vertex.
+void Cc3dFbxOneLoad::ComputeClusterDeformation(FbxAMatrix& pGlobalPosition,
+                               FbxMesh* pMesh,
+                               FbxCluster* pCluster,
+                               FbxAMatrix& pVertexTransformMatrix,
+                               FbxTime pTime,
+                               FbxPose* pPose)
+{
+    FbxCluster::ELinkMode lClusterMode = pCluster->GetLinkMode();
+    
+    FbxAMatrix lReferenceGlobalInitPosition;
+    FbxAMatrix lReferenceGlobalCurrentPosition;
+    FbxAMatrix lAssociateGlobalInitPosition;
+    FbxAMatrix lAssociateGlobalCurrentPosition;
+    FbxAMatrix lClusterGlobalInitPosition;
+    FbxAMatrix lClusterGlobalCurrentPosition;
+    
+    FbxAMatrix lReferenceGeometry;
+    FbxAMatrix lAssociateGeometry;
+    FbxAMatrix lClusterGeometry;
+    
+    FbxAMatrix lClusterRelativeInitPosition;
+    FbxAMatrix lClusterRelativeCurrentPositionInverse;
+    
+    if (lClusterMode == FbxCluster::eAdditive && pCluster->GetAssociateModel())
+    {
+        pCluster->GetTransformAssociateModelMatrix(lAssociateGlobalInitPosition);
+        // Geometric transform of the model
+        lAssociateGeometry = GetGeometry(pCluster->GetAssociateModel());
+        lAssociateGlobalInitPosition *= lAssociateGeometry;
+        lAssociateGlobalCurrentPosition = GetGlobalPosition(pCluster->GetAssociateModel(), pTime, pPose);
+        
+        pCluster->GetTransformMatrix(lReferenceGlobalInitPosition);
+        // Multiply lReferenceGlobalInitPosition by Geometric Transformation
+        lReferenceGeometry = GetGeometry(pMesh->GetNode());
+        lReferenceGlobalInitPosition *= lReferenceGeometry;
+        lReferenceGlobalCurrentPosition = pGlobalPosition;
+        
+        // Get the link initial global position and the link current global position.
+        pCluster->GetTransformLinkMatrix(lClusterGlobalInitPosition);
+        // Multiply lClusterGlobalInitPosition by Geometric Transformation
+        lClusterGeometry = GetGeometry(pCluster->GetLink());
+        lClusterGlobalInitPosition *= lClusterGeometry;
+        lClusterGlobalCurrentPosition = GetGlobalPosition(pCluster->GetLink(), pTime, pPose);
+        
+        // Compute the shift of the link relative to the reference.
+        //ModelM-1 * AssoM * AssoGX-1 * LinkGX * LinkM-1*ModelM
+        pVertexTransformMatrix = lReferenceGlobalInitPosition.Inverse() * lAssociateGlobalInitPosition * lAssociateGlobalCurrentPosition.Inverse() *
+        lClusterGlobalCurrentPosition * lClusterGlobalInitPosition.Inverse() * lReferenceGlobalInitPosition;
+    }
+    else
+    {
+        pCluster->GetTransformMatrix(lReferenceGlobalInitPosition);
+        lReferenceGlobalCurrentPosition = pGlobalPosition;
+        // Multiply lReferenceGlobalInitPosition by Geometric Transformation
+        lReferenceGeometry = GetGeometry(pMesh->GetNode());
+        lReferenceGlobalInitPosition *= lReferenceGeometry;
+        
+        // Get the link initial global position and the link current global position.
+        pCluster->GetTransformLinkMatrix(lClusterGlobalInitPosition);
+        lClusterGlobalCurrentPosition = GetGlobalPosition(pCluster->GetLink(), pTime, pPose);
+        
+        // Compute the initial position of the link relative to the reference.
+        lClusterRelativeInitPosition = lClusterGlobalInitPosition.Inverse() * lReferenceGlobalInitPosition;
+        
+        // Compute the current position of the link relative to the reference.
+        lClusterRelativeCurrentPositionInverse = lReferenceGlobalCurrentPosition.Inverse() * lClusterGlobalCurrentPosition;
+        
+        // Compute the shift of the link relative to the reference.
+        pVertexTransformMatrix = lClusterRelativeCurrentPositionInverse * lClusterRelativeInitPosition;
+    }
+}
