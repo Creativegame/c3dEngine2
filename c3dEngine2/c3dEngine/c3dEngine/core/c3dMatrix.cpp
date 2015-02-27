@@ -75,6 +75,15 @@ Cc3dMatrix4 Cc3dMatrix4::operator+(const Cc3dMatrix4&mat)const{
 	}
 	return Cc3dMatrix4(r);
 }
+Cc3dMatrix4 Cc3dMatrix4::operator-(const Cc3dMatrix4&mat)const{
+    const float *a=this->getArray();
+    const float *b=mat.getArray();
+    float r[16];//result
+    for(int i=0;i<16;i++){
+        r[i]=a[i]-b[i];
+    }
+    return Cc3dMatrix4(r);
+}
 Cc3dMatrix4 Cc3dMatrix4::operator*(const Cc3dMatrix4&mat)const{
     const float *a=this->getArray();
     const float *b=mat.getArray();

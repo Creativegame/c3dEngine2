@@ -1,6 +1,7 @@
 #ifndef _c3dSkinActor__
 #define _c3dSkinActor__
 #include<vector>
+#include<string>
 using namespace std;
 #include "core/c3dActor.h"
 
@@ -220,6 +221,7 @@ public:
                 return animCurveFrame;
             }
         }
+        
         assert(false);
     }
 
@@ -228,6 +230,23 @@ protected:
     
 
 };
+class Cc3dSkinMesh;
+class Cc3dTargetShape:public Cc3dObject
+{
+public:
+    Cc3dTargetShape();
+    virtual ~Cc3dTargetShape();
+    void setTargetShapeName(const string&name){m_targetShapeName=name;}
+    string getTargetShapeName()const{return m_targetShapeName;}
+    void setTargetShapeMesh(Cc3dSkinMesh*targetShapeMesh);
+    Cc3dSkinMesh*getTargetShapeMesh();
+public:
+    vector<Cc3dVector4> m_controlPoints;
+    vector<int> m_controlPointsIndices;
+protected:
+    string m_targetShapeName;
+    Cc3dSkinMesh* m_targetShapeMesh;
+};
 
 class Cc3dBlendShapeChannel:public Cc3dObject
 {
@@ -235,13 +254,40 @@ public:
     Cc3dBlendShapeChannel(){
     }
     virtual~Cc3dBlendShapeChannel(){
-    
+        for(int i=0;i<(int)m_animCurveList.size();i++){
+            if(m_animCurveList[i])m_animCurveList[i]->release();
+        }
+        for(int i=0;i<(int)m_targetShapeList.size();i++){
+            if(m_targetShapeList[i])m_targetShapeList[i]->release();
+        }
     }
-    void addAnimCurve(const Cc3dAnimCurve){
+    void addAnimCurve(Cc3dAnimCurve*aniCurve){
+        m_animCurveList.push_back(aniCurve);
+        aniCurve->retain();
         
     }
+    Cc3dAnimCurve* getAnimCurveByIndex(int index){
+        assert(index>=0&&index<(int)m_animCurveList.size());
+        return m_animCurveList[index];
+    }
+    int getAnimCurveCount()const{return m_animCurveList.size();}
+    
+    void addTargetShape(Cc3dTargetShape*targetShape){
+        m_targetShapeList.push_back(targetShape);
+        targetShape->retain();
+    }
+    Cc3dTargetShape*getTargetShapeByIndex(int index){
+        assert(index>=0&&index<(int)m_targetShapeList.size());
+        return m_targetShapeList[index];
+    }
+    int getTargetShapeCount()const{return m_targetShapeList.size();}
+  
 protected:
     vector<Cc3dAnimCurve*> m_animCurveList;
+    vector<Cc3dTargetShape*> m_targetShapeList;
+
+public:
+    vector<float> m_targetShapeFullWeights;
     
 };
 
@@ -250,10 +296,28 @@ class Cc3dBlendShape:public Cc3dObject
 protected:
     vector<Cc3dBlendShapeChannel*> m_blendShapeChannelList;
 public:
+    Cc3dBlendShape(){
+    }
+    virtual ~Cc3dBlendShape(){
+        for(int i=0;i<(int)m_blendShapeChannelList.size();i++){
+            if(m_blendShapeChannelList[i])m_blendShapeChannelList[i]->release();
+        }
+    }
+    void addBlendShapeChannel(Cc3dBlendShapeChannel*blendShapeChannel){
+        m_blendShapeChannelList.push_back(blendShapeChannel);
+        blendShapeChannel->retain();
+    }
+    Cc3dBlendShapeChannel* getBlendShapeChannelByIndex(int index){
+        assert(index>=0&&index<(int)m_blendShapeChannelList.size());
+        return m_blendShapeChannelList[index];
+    }
+    int getBlendShapeChannelCount()const{return (int)m_blendShapeChannelList.size();}
+
     
     
 
 };
+
 
 class Cc3dSkin:public Cc3dObject
 {
@@ -340,6 +404,10 @@ public:
 		//copy m_subMeshData
 		*m_subMeshData_backup=*(Cc3dSkinSubMeshData*)m_subMeshData;
 	}
+    void restoreSubMeshData(){
+        *m_subMeshData=*m_subMeshData_backup;
+        
+    }
 	Cc3dVertex getBackupVertexByIndex(int index){
 		return m_subMeshData_backup->getVertexByIndex(index); 
 	}
@@ -353,6 +421,7 @@ protected:
 	Cc3dSkin*m_skin;
 	vector<vector<_CmeshIDvID> > m_vertexDupList;//m_vertexDupList[meshVID] is duplicated to {(meshID,vID),(meshID,vID),...}
     vector<Cc3dAniLayer*>  m_aniLayerList;
+    vector<Cc3dBlendShape*> m_blendShapeList;
 public:
 	Cc3dSkinMesh(){
 		m_fbxMeshPtr=NULL;
@@ -362,6 +431,9 @@ public:
 		if(m_skin)m_skin->release();
         for(int i=0;i<(int)m_aniLayerList.size();i++){
             if(m_aniLayerList[i])m_aniLayerList[i]->release();
+        }
+        for(int i=0;i<(int)m_blendShapeList.size();i++){
+            if(m_blendShapeList[i])m_blendShapeList[i]->release();
         }
 	}
     void addAniLayer(Cc3dAniLayer*aniLayer){
@@ -375,109 +447,22 @@ public:
     }
     int getAniLayerCount()const{return (int)m_aniLayerList.size();}
 
+    void addBlendShape(Cc3dBlendShape*blendShape){
+        m_blendShapeList.push_back(blendShape);
+        blendShape->retain();
+    }
+    Cc3dBlendShape* getBlendShapeByIndex(int index){
+        assert(index>=0&&index<(int)m_blendShapeList.size());
+        return m_blendShapeList[index];
+    }
+    int getBlendShapeCount()const{return (int)m_blendShapeList.size();}
+    
 	void doExport(string filePath,bool valueOnly);
 	void doImport(string filePath,bool valueOnly);
 	void setFbxMeshPtr(void*fbxMeshPtr){m_fbxMeshPtr=fbxMeshPtr;}
 	void* getFbxMeshPtr(){return m_fbxMeshPtr;}
 
-	void deform(int aniLayerIndex,float time){
-        //mesh transform animation
-        if(this->getAniLayerCount()!=0)
-        {
-            int aniLayerCount=this->getAniLayerCount();
-            assert(aniLayerIndex<aniLayerCount);
-            Cc3dAniLayer*aniLayer=this->getAniLayerByIndex(aniLayerIndex);
-            const Cc3dAniFrame&aniFrame=aniLayer->getAniFrameByTime(time);
-            Cc3dMatrix4 meshTransformMat=aniFrame.getTransformMat();//should change vertexTransformMat to transformMat!!!!!!!!!
-            this->setRTSmat(meshTransformMat);
-        }
-        //skin deform animation
-		if(m_skin){
-            int meshVertexCount = (int)m_vertexDupList.size();
-
-            vector<Cc3dMatrix4> deformationList;//deformation of each vertex
-            deformationList.resize(meshVertexCount);
-            for(int i=0;i<(int)deformationList.size();i++)deformationList[i]=zeroMat();
-            vector<float> weightList;//weight of each vertex
-            weightList.resize(meshVertexCount);
-            for(int i=0;i<(int)weightList.size();i++)weightList[i]=0;
-            
-            // For all clusters, accumulate their deformation and weight
-            // on each vertices and store them in deformationList and weightList.
-			int clusterCount = m_skin->getClusterCount();
-			for ( int clusterIndex=0; clusterIndex<clusterCount; ++clusterIndex)
-			{
-				Cc3dSkinCluster*cluster=m_skin->getClusterByIndex(clusterIndex);
-
-				int aniLayerCount=cluster->getAniLayerCount();
-				assert(aniLayerIndex<aniLayerCount);
-				Cc3dAniLayer*aniLayer=cluster->getAniLayerByIndex(aniLayerIndex);
-				//int aniFrameCount=aniLayer->getAniFrameCount();//not used
-				const Cc3dAniFrame&aniFrame=aniLayer->getAniFrameByTime(time);
-				Cc3dMatrix4 vertexTransformMat=aniFrame.getTransformMat();
-				//float time=aniFrame.getTime();//not used
-				int clusterVertexIndexCount=cluster->getVertexIndexCount();
-
-				for (int k = 0; k < clusterVertexIndexCount; ++k) 
-				{             
-					int meshVID = cluster->getVertexIndexAt(k);
-
-					// Sometimes, the mesh can have less points than at the time of the skinning
-					// because a smooth operator was active when skinning but has been deactivated during export.
-					if (meshVID >= meshVertexCount)
-						continue;
-
-					float weight = cluster->getVertexWeightAt(k);
-
-					if (weight == 0.0)continue;
-
-					// Compute the influence of the link on the vertex.
-					Cc3dMatrix4 influenceMat = vertexTransformMat*weight;
-					{
-						// Add to the sum of the deformations on the vertex.
-						deformationList[meshVID]=deformationList[meshVID]+influenceMat;
-
-						// Add to the sum of weights to either normalize or complete the vertex.
-						weightList[meshVID]+=weight;
-					}
-				}
-
-			}	
-			//Actually deform each vertices here by information stored in deformationList and weightList
-			for (int i = 0; i < meshVertexCount; i++) 
-			{
-				const int meshVID=i;
-				vector<_CmeshIDvID> vertexDup=m_vertexDupList[meshVID];
-				int nDup=(int)vertexDup.size();
-				if(nDup==0)continue;
-				//deform vertexes in vertexDup
-				for(int j=0;j<nDup;j++){
-					int meshID = vertexDup[j].getMeshID();
-					int vID = vertexDup[j].getvID();
-					Cc3dVertex newVertex=((Cc3dSkinSubMesh*)this->getSubMeshByIndex(meshID))->getBackupVertexByIndex(vID);//deform result
-					// Deform vertex
-					if (weightList[meshVID] != 0.0) 
-					{
-						//deform pos
-						if(j==0){
-							newVertex.setPos(deformationList[meshVID]*newVertex.getPos());
-						}else{
-							//same as vertexDup[0]
-							int meshID0=vertexDup[0].getMeshID();
-							int vID0=vertexDup[0].getvID();
-							newVertex.setPos(this->getSubMeshByIndex(meshID0)->getVertexByIndex(vID0).getPos());
-						}
-						//deform norm
-						newVertex.setNorm(deformationList[meshVID]*newVertex.getNorm());
-
-					}
-					// replace vertexDup[j] with newVertex
-					this->getSubMeshByIndex(meshID)->setVertexByIndex(vID,newVertex);
-				}
-
-			}
-		}
-	}
+	
 	void setSkin(Cc3dSkin*skin){
 		if(m_skin==NULL){
 			m_skin=skin;
@@ -496,7 +481,7 @@ public:
 		assert(index>=0&&index<(int)m_vertexDupList.size());
 		return m_vertexDupList[index];
 	}
-	
+    void deform(int aniLayerIndex,float time);
 };
 class Cc3dAniLayerInfo:public Cc3dObject
 {
@@ -582,18 +567,8 @@ public:
 	int getAniLayerIndex()const{return m_aniLayerIndex;}
 	void setInterval(float interval){m_interval=interval;}
 	float getInterval()const{return m_interval;}
-	Cc3dSkinMesh* findSkinMeshByFbxMeshPtr(void*fbxMeshPtr){
-		int meshCount=this->getMeshCount();
-		for(int i=0;i<meshCount;i++){
-			Cc3dSkinMesh*mesh=(Cc3dSkinMesh*)this->getMeshByIndex(i);
-			if(mesh->getFbxMeshPtr()==fbxMeshPtr){
-				return mesh;
-			}
-		}
-		return NULL;
-	
-	}
-	void deform(int aniLayerIndex,float time){
+    Cc3dSkinMesh* findSkinMeshByFbxMeshPtr(void*fbxMeshPtr);
+    void deform(int aniLayerIndex,float time){
 		int nMeshCount=this->getMeshCount();
 		for(int i=0;i<nMeshCount;i++){
 			((Cc3dSkinMesh*)this->getMeshByIndex(i))->deform(aniLayerIndex,time);

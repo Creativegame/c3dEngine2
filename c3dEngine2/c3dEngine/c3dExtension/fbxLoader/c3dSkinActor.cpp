@@ -1,4 +1,294 @@
 #include "c3dSkinActor.h"
+#include "fbxsdk.h"
+Cc3dSkinMesh* Cc3dSkinActor::findSkinMeshByFbxMeshPtr(void*fbxMeshPtr){
+    int meshCount=this->getMeshCount();
+    for(int i=0;i<meshCount;i++){
+        Cc3dSkinMesh*mesh=(Cc3dSkinMesh*)this->getMeshByIndex(i);
+        if(mesh->getFbxMeshPtr()==fbxMeshPtr){
+            return mesh;
+        }
+    }
+    return NULL;
+    
+}
+
+Cc3dTargetShape::Cc3dTargetShape(){
+    m_targetShapeMesh=NULL;
+}
+Cc3dTargetShape::~Cc3dTargetShape(){
+    if(m_targetShapeMesh)m_targetShapeMesh->release();
+}
+void Cc3dTargetShape::setTargetShapeMesh(Cc3dSkinMesh*targetShapeMesh){
+    m_targetShapeMesh=targetShapeMesh;
+    m_targetShapeMesh->retain();
+}
+Cc3dSkinMesh*Cc3dTargetShape::getTargetShapeMesh(){
+    return m_targetShapeMesh;
+}
+
+void Cc3dSkinMesh::deform(int aniLayerIndex,float time){
+    //restore subMesh data for all subMeshes
+    {
+        int nSubMesh=this->getSubMeshCount();
+        for(int i=0;i<nSubMesh;i++){
+            Cc3dSkinSubMesh*subMesh=dynamic_cast<Cc3dSkinSubMesh*>(this->getSubMeshByIndex(i));
+            subMesh->restoreSubMeshData();
+        }
+    }
+    //mesh transform animation
+    if(this->getAniLayerCount()!=0)
+    {
+        int aniLayerCount=this->getAniLayerCount();
+        assert(aniLayerIndex<aniLayerCount);
+        Cc3dAniLayer*aniLayer=this->getAniLayerByIndex(aniLayerIndex);
+        const Cc3dAniFrame&aniFrame=aniLayer->getAniFrameByTime(time);
+        Cc3dMatrix4 meshTransformMat=aniFrame.getTransformMat();//should change vertexTransformMat to transformMat!!!!!!!!!
+        this->setRTSmat(meshTransformMat);
+    }
+    //shape deform animation
+    const bool useSlerp=false;//slerp is slow
+    {
+        int nBlendShape=this->getBlendShapeCount();
+        for(int i=0;i<nBlendShape;i++){
+            Cc3dBlendShape*blendShape=this->getBlendShapeByIndex(i);
+            int nBlendShapeChannel=blendShape->getBlendShapeChannelCount();
+            for(int j=0;j<nBlendShapeChannel;j++){
+                Cc3dBlendShapeChannel*blendShapeChannel=blendShape->getBlendShapeChannelByIndex(j);
+                if(blendShapeChannel->getAnimCurveCount()==0){//if empty channel, skip
+                    continue;
+                }
+                Cc3dAnimCurve*animCurve=blendShapeChannel->getAnimCurveByIndex(aniLayerIndex);
+                
+                if(animCurve){//animCurve exist
+                    const Cc3dAnimCurveFrame&animCurveFrame=animCurve->getAniCurveFrameByTime(time);
+                    const float weight=animCurveFrame.getValue();
+                    const vector<float>&targetShapeFullWeights=blendShapeChannel->m_targetShapeFullWeights;
+                    
+                    // Find the two shape indices for influence calculation according to the weight.
+                    // Consider index of base geometry as -1.
+                    Cc3dBlendShapeChannel*lChannel=blendShapeChannel;
+                    float lWeight=weight;
+                    const int lShapeCount = (int)targetShapeFullWeights.size();
+                    const vector<float>&lFullWeights = targetShapeFullWeights;
+                    
+                    // Find out which scope the lWeight falls in.
+                    int lStartIndex = -1;
+                    int lEndIndex = -1;
+                    for(int lShapeIndex = 0; lShapeIndex<lShapeCount; ++lShapeIndex)
+                    {
+                        if(lWeight > 0 && lWeight <= lFullWeights[0])
+                        {
+                            lEndIndex = 0;
+                            break;
+                        }
+                        if(lWeight > lFullWeights[lShapeIndex] && lWeight < lFullWeights[lShapeIndex+1])
+                        {
+                            
+                            lStartIndex = lShapeIndex;
+                            lEndIndex = lShapeIndex + 1;
+                            break;
+                        }
+                    }
+                    
+                    Cc3dTargetShape* lStartShape = NULL;
+                    Cc3dTargetShape* lEndShape = NULL;
+                    if(lStartIndex > -1)
+                    {
+                        lStartShape = lChannel->getTargetShapeByIndex(lStartIndex);
+                    }
+                    if(lEndIndex > -1)
+                    {
+                        lEndShape = lChannel->getTargetShapeByIndex(lEndIndex);
+                    }
+                    //The weight percentage falls between base geometry and the first target shape.
+                    if(lStartIndex == -1 && lEndShape)
+                    {
+                        float lEndWeight = lFullWeights[0];
+                        // Calculate the real weight.
+                        lWeight = (lWeight/lEndWeight) * 100;
+
+                        //Actually deform each vertices
+                        int meshVertexCount = (int)m_vertexDupList.size();
+                        for (int i = 0; i < meshVertexCount; i++)
+                        {
+                            const int meshVID=i;
+                            vector<_CmeshIDvID> vertexDup=m_vertexDupList[meshVID];
+                            int nDup=(int)vertexDup.size();
+                            if(nDup==0)continue;
+                            //deform vertexes in vertexDup
+                            for(int j=0;j<nDup;j++){
+                                int meshID = vertexDup[j].getMeshID();
+                                int vID = vertexDup[j].getvID();
+                                Cc3dVertex curVertex=((Cc3dSkinSubMesh*)this->getSubMeshByIndex(meshID))->getVertexByIndex(vID);
+                                Cc3dVertex newVertex=curVertex;
+                                // deform vertex
+                                assert(meshVID<(int)lEndShape->m_controlPoints.size());
+                                Cc3dVector4 startPos=curVertex.getPos();
+                                Cc3dVector4 endPos=lEndShape->m_controlPoints[meshVID];
+                                Cc3dVector4 lInfluence_pos = (endPos - startPos) * lWeight * 0.01;
+                                newVertex.setPos(startPos+lInfluence_pos);
+                                // deform norm
+                                if(lEndShape->getTargetShapeMesh()){
+                                    Cc3dVector4 startNorm=curVertex.getNorm();
+                                    Cc3dVector4 endNorm=((Cc3dSkinSubMesh*)lEndShape->getTargetShapeMesh()->getSubMeshByIndex(meshID))->getBackupVertexByIndex(vID).getNorm();
+                                    if(useSlerp){
+                                        Cc3dVector4 newNorm=slerp(startNorm,endNorm,lWeight * 0.01);
+                                        newVertex.setNorm(newNorm);
+                                    }else{
+                                        Cc3dVector4 lInfluence_norm = (endNorm - startNorm) * lWeight * 0.01;
+                                        Cc3dVector4 newNorm=(startNorm+lInfluence_norm);
+                                        newVertex.setNorm(newNorm);
+                                    }
+                                }
+                                // replace vertex
+                                this->getSubMeshByIndex(meshID)->setVertexByIndex(vID,newVertex);
+                            }
+                            
+                        }
+                    }
+                    //The weight percentage falls between two target shapes.
+                    else if(lStartShape && lEndShape)
+                    {
+                        float lStartWeight = lFullWeights[lStartIndex];
+                        float lEndWeight = lFullWeights[lEndIndex];
+                        // Calculate the real weight.
+                        lWeight = ((lWeight-lStartWeight)/(lEndWeight-lStartWeight)) * 100;
+                        //Actually deform each vertices
+                        int meshVertexCount = (int)m_vertexDupList.size();
+                        for (int i = 0; i < meshVertexCount; i++)
+                        {
+                            const int meshVID=i;
+                            vector<_CmeshIDvID> vertexDup=m_vertexDupList[meshVID];
+                            int nDup=(int)vertexDup.size();
+                            if(nDup==0)continue;
+                            //deform vertexes in vertexDup
+                            for(int j=0;j<nDup;j++){
+                                int meshID = vertexDup[j].getMeshID();
+                                int vID = vertexDup[j].getvID();
+                                Cc3dVertex curVertex=((Cc3dSkinSubMesh*)this->getSubMeshByIndex(meshID))->getVertexByIndex(vID);
+                                Cc3dVertex newVertex=curVertex;
+                                // deform vertex
+                                assert(meshVID<(int)lEndShape->m_controlPoints.size());
+                                Cc3dVector4 startPos=lStartShape->m_controlPoints[meshVID];
+                                Cc3dVector4 endPos=lEndShape->m_controlPoints[meshVID];
+                                Cc3dVector4 lInfluence_pos = (endPos - startPos) * lWeight * 0.01;
+                                newVertex.setPos(startPos+lInfluence_pos);
+                                // deform norm
+                                if(lStartShape->getTargetShapeMesh()&&lEndShape->getTargetShapeMesh()){
+                                    Cc3dVector4 startNorm=((Cc3dSkinSubMesh*)lStartShape->getTargetShapeMesh()->getSubMeshByIndex(meshID))->getBackupVertexByIndex(vID).getNorm();
+                                    Cc3dVector4 endNorm=((Cc3dSkinSubMesh*)lEndShape->getTargetShapeMesh()->getSubMeshByIndex(meshID))->getBackupVertexByIndex(vID).getNorm();
+                                    if(useSlerp){
+                                        Cc3dVector4 newNorm=slerp(startNorm,endNorm,lWeight * 0.01);
+                                        newVertex.setNorm(newNorm);
+                                    }else{
+                                        Cc3dVector4 lInfluence_norm = (endNorm - startNorm) * lWeight * 0.01;
+                                        Cc3dVector4 newNorm=(startNorm+lInfluence_norm);
+                                        newVertex.setNorm(newNorm);
+                                    }
+                                }
+                                //replace vertex
+                                this->getSubMeshByIndex(meshID)->setVertexByIndex(vID,newVertex);
+                                
+                                
+                            }
+                            
+                        }
+                        
+                    }
+                }
+            }
+        }
+    }
+    
+    //skin deform animation
+    if(m_skin){
+        int meshVertexCount = (int)m_vertexDupList.size();
+        
+        vector<Cc3dMatrix4> deformationList;//deformation of each vertex
+        deformationList.resize(meshVertexCount);
+        for(int i=0;i<(int)deformationList.size();i++)deformationList[i]=zeroMat();
+        vector<float> weightList;//weight of each vertex
+        weightList.resize(meshVertexCount);
+        for(int i=0;i<(int)weightList.size();i++)weightList[i]=0;
+        
+        // For all clusters, accumulate their deformation and weight
+        // on each vertices and store them in deformationList and weightList.
+        int clusterCount = m_skin->getClusterCount();
+        for ( int clusterIndex=0; clusterIndex<clusterCount; ++clusterIndex)
+        {
+            Cc3dSkinCluster*cluster=m_skin->getClusterByIndex(clusterIndex);
+            
+            int aniLayerCount=cluster->getAniLayerCount();
+            assert(aniLayerIndex<aniLayerCount);
+            Cc3dAniLayer*aniLayer=cluster->getAniLayerByIndex(aniLayerIndex);
+            //int aniFrameCount=aniLayer->getAniFrameCount();//not used
+            const Cc3dAniFrame&aniFrame=aniLayer->getAniFrameByTime(time);
+            Cc3dMatrix4 vertexTransformMat=aniFrame.getTransformMat();
+            //float time=aniFrame.getTime();//not used
+            int clusterVertexIndexCount=cluster->getVertexIndexCount();
+            
+            for (int k = 0; k < clusterVertexIndexCount; ++k)
+            {
+                int meshVID = cluster->getVertexIndexAt(k);
+                
+                // Sometimes, the mesh can have less points than at the time of the skinning
+                // because a smooth operator was active when skinning but has been deactivated during export.
+                if (meshVID >= meshVertexCount)
+                    continue;
+                
+                float weight = cluster->getVertexWeightAt(k);
+                
+                if (weight == 0.0)continue;
+                
+                // Compute the influence of the link on the vertex.
+                Cc3dMatrix4 influenceMat = vertexTransformMat*weight;
+                {
+                    // Add to the sum of the deformations on the vertex.
+                    deformationList[meshVID]=deformationList[meshVID]+influenceMat;
+                    
+                    // Add to the sum of weights to either normalize or complete the vertex.
+                    weightList[meshVID]+=weight;
+                }
+            }
+            
+        }
+        //Actually deform each vertices here by information stored in deformationList and weightList
+        for (int i = 0; i < meshVertexCount; i++)
+        {
+            const int meshVID=i;
+            vector<_CmeshIDvID> vertexDup=m_vertexDupList[meshVID];
+            int nDup=(int)vertexDup.size();
+            if(nDup==0)continue;
+            //deform vertexes in vertexDup
+            for(int j=0;j<nDup;j++){
+                int meshID = vertexDup[j].getMeshID();
+                int vID = vertexDup[j].getvID();
+                Cc3dVertex newVertex=((Cc3dSkinSubMesh*)this->getSubMeshByIndex(meshID))->getVertexByIndex(vID);//((Cc3dSkinSubMesh*)this->getSubMeshByIndex(meshID))->getBackupVertexByIndex(vID);//deform result
+                // Deform vertex
+                if (weightList[meshVID] != 0.0)
+                {
+                    //deform pos
+                    if(j==0){
+                        newVertex.setPos(deformationList[meshVID]*newVertex.getPos());
+                    }else{
+                        //same as vertexDup[0]
+                        int meshID0=vertexDup[0].getMeshID();
+                        int vID0=vertexDup[0].getvID();
+                        newVertex.setPos(this->getSubMeshByIndex(meshID0)->getVertexByIndex(vID0).getPos());
+                    }
+                    //deform norm
+                    newVertex.setNorm(deformationList[meshVID]*newVertex.getNorm());
+                    
+                }
+                // replace vertexDup[j] with newVertex
+                this->getSubMeshByIndex(meshID)->setVertexByIndex(vID,newVertex);
+            }
+            
+        }
+    }
+    
+}
+
 
 void Cc3dAniLayer::doExport(string filePath,bool valueOnly){
 //#if (C3D_TARGET_PLATFORM == C3D_PLATFORM_WIN32)
@@ -669,6 +959,12 @@ void Cc3dSkinMesh::doImport(string filePath,bool valueOnly){
         fskipOneStr(fp,valueOnly);
         fscanf(fp,"%i",&t_nAniLayer);
         if(!valueOnly)assert(string(tCharBuffer)=="m_aniLayerList.size");
+        //meshName
+        fskipOneStr(fp,valueOnly);
+        char t_str[1024];
+        fscanf(fp,"%s",t_str);
+        this->setName(t_str);
+        if(!valueOnly)assert(string(tCharBuffer)=="meshName");
 		//--------------------------close file
 		fclose(fp);
 		//------------------m_skin

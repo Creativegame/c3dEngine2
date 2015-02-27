@@ -56,7 +56,7 @@ void initGame(){
     }
 
 	//load fbx
-    string fileNameWithoutExt="apple";
+    string fileNameWithoutExt="seg3LevelPoints";
 	string fbxFilePath="fbxLoader_static_resource/"+fileNameWithoutExt+".fbx";//"fbxLoader_static_resource/apple.fbx";
 	Cc3dSkinActor*actor=Cc3dFbxLoader::sharedFbxLoader()->load(fbxFilePath.c_str(),0);//note: export to static format must use 0
 	//actor is just for export, no need to fully set up and add to scene

@@ -316,3 +316,57 @@ bool isPowOfTwo(int n){
     }
     return true;
 }
+Cc3dVector4 slerp(const Cc3dVector4&v1,const Cc3dVector4&v2,float t)
+//v1,v2 must be normalized vector, with w=0
+//t is range from 0 to 1
+{
+    const float len2_v1=getLength2(v1);
+    const float len2_v2=getLength2(v2);
+    assert(fabsf(len2_v1-1)<0.00001);
+    assert(fabsf(len2_v2-1)<0.00001);
+    assert(v1.w()==0);
+    assert(v2.w()==0);
+    if(dot(v1, v2)>0.9999999){
+        Cc3dVector4 v=v1+(v2-v1)*t;
+        v.setw(0);
+        v=normalize(v);
+        return v;
+    }
+    //calculate norm
+    Cc3dVector4 norm=cross(v1, v2);
+    norm=normalize(norm);
+    //calculate space1(v1,u1,norm)
+    Cc3dVector4 u1=cross(norm, v1);
+    //space1 matrix
+    Cc3dMatrix4 space1Mat;
+    {
+        float m[16]={
+            v1.x(),v1.y(),v1.z(),0,//col1
+            u1.x(),u1.y(),u1.z(),0,//col2
+            norm.x(),norm.y(),norm.z(),0,//col3
+            0,0,0,1//col4
+        };
+        space1Mat.init(m);
+    }
+    //v1 in space1 is (1,0,0,0)
+    Cc3dVector4 v1InSpace1=Cc3dVector4(1,0,0,0);
+    //v2 in space1 is?
+    Cc3dVector4 v2InSpace1=transpose(space1Mat)*v2;
+    //----slerp in space1, it is a 2d problem
+    //calculate A
+    float cosA=dot(v1InSpace1, v2InSpace1);
+    float sinA=cross(v1InSpace1, v2InSpace1).z();
+    float A_radian=atan2f(sinA, cosA);//(-pi,pi],see:http://zh.wikipedia.org/wiki/Atan2
+    if(A_radian<0){
+        A_radian+=2*M_PI;
+    }//now A_radian is in [0,2*pi)
+    float k1=sinf((1-t)*A_radian)/sinA;
+    float k2=sinf(t*A_radian)/sinA;
+    Cc3dVector4 vInSpace1=v1InSpace1*k1+v2InSpace1*k2;
+    //now 2d problem is solved
+    //transform vInSpace1 to world space to get slerp result v
+    Cc3dVector4 v=space1Mat*vInSpace1;
+    v.setw(0);
+    v=normalize(v);
+    return v;
+}

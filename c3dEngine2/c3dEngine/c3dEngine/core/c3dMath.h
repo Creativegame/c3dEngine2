@@ -33,4 +33,5 @@ float getLength2(const Cc3dVector4&v);
 float getLength(const Cc3dVector4&v);
 Cc3dMatrix4 orthogonalization3x3(const Cc3dMatrix4&mat);
 bool isPowOfTwo(int n);
+Cc3dVector4 slerp(const Cc3dVector4&v1,const Cc3dVector4&v2,float t);
 #endif /* defined(__HelloCpp__c3dMath__) */
