@@ -45,6 +45,9 @@ enum Ec3dCullFace{
 
 
 const float c3d_PI=3.14159265358979323846264338327950288;
+#ifndef M_PI
+#define M_PI c3d_PI
+#endif
 
 #if (C3D_TARGET_PLATFORM == C3D_PLATFORM_WIN32) 
 	const float c3d_INF=0.5*(numeric_limits<float>::max)();
