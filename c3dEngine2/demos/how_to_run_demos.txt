@@ -14,7 +14,8 @@ iOS:
 3, open .xcodeproj file with Xcode.
 4, run.
 note:
-some demos may do not have iOS version.
+1, currently not support iphone6 simulator, you can only run demos in iphone5 simulator. 
+2, some demos may do not have iOS version.
 
 ----------------------------------------------------
 
@@ -25,11 +26,13 @@ win32:
 2, 进入allDemos/proj.win32目录, 用vs2010打开allDemos.sln.
 3, 在解决方案管理器中选择想运行的工程, 将其设为“启动项目”.
 4, 运行.
-建议在release模式下运行 (我主要在release下调试,偶尔会忘记配debug).
+注意：建议在release模式下运行 (我主要在release下调试,偶尔会忘记配debug).
   
 iOS:  
 1, 下载并安装 fbxsdk2015.1 for iOS（http://usa.autodesk.com/adsk/servlet/pc/item?siteID=123112&id=10775847），然后到安装目录下找到include文件夹和lib文件夹，将它们拷贝到"c3dEngine/thirdPart/FBX/FBX_iOS/FbxSdk/2015.1"目录下.  
 2, 例如想运行app_box这个demo,进入app_box/proj.ios目录。
 3, 用Xcode打开.xcodeproj文件。
 4, 运行.
-有些demo可能没有iOS版本。
+注意：
+1，目前不支持iphone6模拟器，只能在iphone5模拟器下运行。
+2，有些demo没有iOS版本。
