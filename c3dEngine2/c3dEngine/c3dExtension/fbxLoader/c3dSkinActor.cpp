@@ -145,8 +145,6 @@ void Cc3dSkinMesh::deform(int aniLayerIndex,float time){
                     }else{
                         assert(false);
                     }
-                    
-                    
                     //Actually deform each vertices
                     int meshVertexCount = (int)m_vertexDupList.size();
                     for (int i = 0; i < meshVertexCount; i++)
@@ -201,6 +199,7 @@ void Cc3dSkinMesh::deform(int aniLayerIndex,float time){
                                 }else{
                                     assert(false);
                                 }
+                                
             
                                 if(useSlerp){
                                     Cc3dVector4 newNorm=slerp(startNorm,endNorm,lWeight * 0.01);

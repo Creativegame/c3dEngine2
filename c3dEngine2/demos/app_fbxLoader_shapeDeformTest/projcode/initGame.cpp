@@ -55,17 +55,23 @@ void initGame(){
     }
 
 	//----fbx model
-    Cc3dSkinActor*actor=Cc3dFbxLoader::sharedFbxLoader()->load("fbxLoader_resource/shapeDeformTest/shapeDeformTest.fbx",1.0f/10);
-	
-	actor->setPos(Cc3dVector4(0,0,0,1));
-	actor->setLight(light0);
+ 
+    
+    Cc3dSkinActor*actor=Cc3dFbxLoader::sharedFbxLoader()->load("fbxLoader_resource/shapeDeformTest/shapeDeformTest_progressive.fbx",1.0f/10);//shapeDeformTest.fbx
+    actor->setPos(Cc3dVector4(0,0,0,1));
+    actor->setLight(light0);
     actor->setCamera(camera);
-	actor->setProgram(Cc3dProgramCache::sharedProgramCache()->getProgramByName("classicLighting"));
+    actor->setProgram(Cc3dProgramCache::sharedProgramCache()->getProgramByName("classicLighting"));
     actor->setPassUnifoCallback(buildinProgramPassUnifoCallback_classicLighting);
-
+    
     actor->genVBOBuffers();
-	actor->submit(GL_STATIC_DRAW);
+    actor->submit(GL_STATIC_DRAW);
+    
+    
 
-	//----add to scene
+    
+    //----add to scene
     Cc3dSceneManager::sharedSceneManager()->getRoot()->addChild(actor);
+
+	
 }
