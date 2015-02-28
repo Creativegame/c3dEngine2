@@ -18,7 +18,7 @@ void initGame(){
 		light0=new Cc3dLight();
 		light0->autorelease();
 		light0->retain();
-		light0->setPos(50,200,500);
+		light0->setPos(200,200,50);
 		//light0->setSpecular(0.4,0.4,0.4);
 	}
 	 //----camera2D

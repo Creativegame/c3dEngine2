@@ -477,10 +477,11 @@ public:
 	void setVertexDupList(const vector<vector<_CmeshIDvID> >&vertexDupList){
 		m_vertexDupList=vertexDupList;
 	}
-	vector<_CmeshIDvID> getVertexDupByIndex(int index){
+	vector<_CmeshIDvID> getVertexDupByIndex(int index)const {
 		assert(index>=0&&index<(int)m_vertexDupList.size());
 		return m_vertexDupList[index];
 	}
+    int getVertexDupCount()const{return (int)m_vertexDupList.size();}
     void deform(int aniLayerIndex,float time);
 };
 class Cc3dAniLayerInfo:public Cc3dObject
@@ -576,4 +577,5 @@ public:
 	}
 
 };
+bool isTopologySame(const Cc3dSkinMesh*mesh1,const Cc3dSkinMesh*mesh2);
 #endif

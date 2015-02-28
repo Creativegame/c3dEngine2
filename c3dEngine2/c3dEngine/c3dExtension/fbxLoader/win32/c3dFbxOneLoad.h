@@ -49,7 +49,7 @@ public:
 		// Convert mesh, NURBS and patch into triangle mesh //2014-9-27
 		FbxGeometryConverter lGeomConverter(lSdkManager);
 		lGeomConverter.Triangulate(lScene, /*replace*/true);
-
+        
 		
 		//makeSubMeshes
 		makeSubMeshSetForEachNode(lScene->GetRootNode());

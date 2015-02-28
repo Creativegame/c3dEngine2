@@ -776,6 +776,12 @@ bool Cc3dFbxOneLoad::LoadScene(FbxManager* pManager, FbxDocument* pScene, const 
                             Cc3dSkinMesh* mesh=(Cc3dSkinMesh*)m_actor->findSkinMeshByFbxMeshPtr(lNode->GetMesh());
                             assert(mesh);
                             targetShape->setTargetShapeMesh(mesh);
+                            //topology consistency check : mesh and skinMesh have same topology?
+                            bool topologyIsSame=isTopologySame(skinMesh, mesh);
+                            if(topologyIsSame==false){
+                                cout<<"error: target shape mesh's topology is not same with original mesh!"<<endl;
+                                assert(false);
+                            }
                             if(isHideTargetShapeMeshes){
                                 mesh->setIsVisibleRecursively(false);
                                 mesh->setIsDoUpdateRecursively(false);
